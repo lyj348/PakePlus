@@ -1,817 +1,1291 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>煤矿设备检修辅助系统</title>
-  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  <script src="https://unpkg.com/element-plus/dist/index.full.min.js"></script>
-  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI人工智能互动式播报系统 - 党建阵地知识问答</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 40px);
+    }
+
+    /* 头部 */
+    .header {
+      background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+      color: #fff;
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-logo {
+      height: 80px;
+      width: auto;
+      margin-right: 12px;
+      object-fit: contain;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header h1 i {
+      font-size: 28px;
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 14px;
+    }
+
+    .model-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .model-selector select {
+      padding: 6px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .model-selector select option {
+      background: #2196F3;
+      color: #fff;
+    }
+
+    .context-indicator {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .reminder-button {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reminder-button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* 提醒弹窗 */
+    .reminder-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .reminder-modal.active {
+      display: flex;
+    }
+
+    .reminder-content {
+      background: #fff;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .reminder-header {
+      background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+      color: #fff;
+      padding: 20px 24px;
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .reminder-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .reminder-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .reminder-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .reminder-body {
+      padding: 24px;
+    }
+
+    .reminder-form {
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #2196F3;
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    }
+
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #666;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .reminder-list {
+      margin-top: 24px;
+    }
+
+    .reminder-list-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reminder-item {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid #2196F3;
+    }
+
+    .reminder-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .reminder-item-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .reminder-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .reminder-item-actions button {
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .reminder-item-actions button:hover {
+      background: #e0e0e0;
+    }
+
+    .reminder-item-actions .btn-delete {
+      color: #f44336;
+    }
+
+    .reminder-item-actions .btn-delete:hover {
+      background: #ffebee;
+    }
+
+    .reminder-item-info {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .reminder-item-info div {
+      margin-bottom: 4px;
+    }
+
+    .reminder-item-info i {
+      margin-right: 6px;
+      color: #2196F3;
+      width: 14px;
+      font-size: 12px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .empty-reminders {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .empty-reminders i {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: block;
+      color: #ccc;
+    }
+
+    /* 主屏幕行程提醒 */
+    .schedule-reminder {
+      margin-top: 40px;
+      padding: 24px;
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+      border-radius: 12px;
+      border-left: 4px solid #2196F3;
+      display: none;
+    }
+
+    .schedule-reminder.active {
+      display: block;
+    }
+
+    .schedule-reminder-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1565C0;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .schedule-reminder-title i {
+      font-size: 20px;
+    }
+
+    .schedule-reminder-subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+      padding-left: 30px;
+    }
+
+    .schedule-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .schedule-item {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-left: 3px solid #2196F3;
+      transition: all 0.3s;
+    }
+
+    .schedule-item:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .schedule-item.today {
+      border-left-color: #FF9800;
+      background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    }
+
+    .schedule-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .schedule-item-type {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1565C0;
+    }
+
+    .schedule-item.today .schedule-item-type {
+      color: #E65100;
+    }
+
+    .schedule-item-time {
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .schedule-item.today .schedule-item-time {
+      color: #E65100;
+    }
+
+    .schedule-item-details {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .schedule-item-details div {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .schedule-item-details i,
+    .schedule-item-details .fa {
+      margin-right: 6px;
+      margin-top: 3px;
+      color: #2196F3;
+      width: 12px !important;
+      flex-shrink: 0;
+      font-size: 11px !important;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .schedule-item.today .schedule-item-details i,
+    .schedule-item.today .schedule-item-details .fa {
+      color: #FF9800;
+    }
+
+    /* 图标全局优化 */
+    .fa {
+      display: inline-block;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      vertical-align: middle;
+      line-height: 1;
+    }
+
+    /* 消息头像图标优化 */
+    .message-avatar i {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    /* 头部图标优化 */
+    .header h1 i {
+      font-size: 28px;
+      opacity: 0.95;
+      vertical-align: middle;
+    }
+
+    .header-info i {
+      font-size: 14px;
+      opacity: 0.9;
+      vertical-align: middle;
+    }
+
+    /* 按钮图标优化 */
+    .input-actions button i,
+    .voice-button i {
+      margin-right: 6px;
+      font-size: 13px;
+      vertical-align: middle;
+      width: auto;
+    }
+
+    .send-button i {
+      font-size: 15px;
+      vertical-align: middle;
+    }
+
+    /* 提醒区域图标优化 */
+    .schedule-reminder-title i {
+      font-size: 20px;
+      color: #1565C0;
+      vertical-align: middle;
+    }
+
+    /* 欢迎消息图标优化 */
+    .welcome-message i {
+      font-size: 64px;
+      color: #2196F3;
+      margin-bottom: 20px;
+      display: block;
+      opacity: 0.9;
+      line-height: 1;
+    }
+
+    /* 提醒按钮图标 */
+    .reminder-button i {
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    /* 提醒弹窗图标 */
+    .reminder-header h2 i {
+      font-size: 20px;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    .reminder-close i {
+      font-size: 16px;
+      vertical-align: middle;
+    }
+
+    /* 提醒列表图标 */
+    .reminder-item-title i {
+      margin-right: 8px;
+      font-size: 16px;
+      vertical-align: middle;
+      color: #2196F3;
+    }
+
+    .reminder-item-info i,
+    .reminder-item-info .fa {
+      margin-right: 6px;
+      font-size: 11px !important;
+      vertical-align: middle;
+      width: 12px !important;
+      text-align: center;
+    }
+
+    /* 建议问题图标（如果有） */
+    .suggested-question i {
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    /* 输入动作按钮图标对齐 */
+    .input-actions button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 语音按钮图标对齐 */
+    .voice-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 发送按钮图标对齐 */
+    .send-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .schedule-item-details strong {
+      color: #333;
+      margin-right: 4px;
+    }
+
+    /* 主内容区 */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* 三会一课行程提醒概览 */
+    .schedule-panel {
+      padding: 12px 32px 0 32px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .schedule-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .schedule-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .schedule-title i {
+      color: #2196F3;
+    }
+
+    .schedule-subtitle {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .schedule-list {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .schedule-card {
+      min-width: 210px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 10px 12px;
+      border-left: 3px solid #2196F3;
+      font-size: 12px;
+      color: #555;
+      flex-shrink: 0;
+    }
+
+    .schedule-card.today {
+      border-left-color: #FF9800;
+    }
+
+    .schedule-card-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    .schedule-card-line {
+      margin-bottom: 2px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .schedule-card-line i {
+      width: 14px;
+      margin-right: 4px;
+      color: #2196F3;
+    }
+
+    .schedule-empty {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* 对话区域 */
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 32px 24px 32px;
+      background: #f8f9fa;
+    }
+
+    .chat-message {
+      margin-bottom: 20px;
+      display: flex;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-message.user {
+      justify-content: flex-end;
+    }
+
+    .chat-message.assistant {
+      justify-content: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 70%;
+      padding: 14px 18px;
+      border-radius: 12px;
+      line-height: 1.6;
+      word-wrap: break-word;
+      position: relative;
+    }
+
+    .chat-message.user .message-bubble {
+      background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-message.assistant .message-bubble {
+      background: #fff;
+      color: #333;
+      border: none;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin: 0 12px;
+      flex-shrink: 0;
+    }
+
+    .chat-message.user .message-avatar {
+      background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+      color: #fff;
+      order: 2;
+    }
+
+    .chat-message.assistant .message-avatar {
+      background: #E3F2FD;
+      color: #2196F3;
+    }
+
+    .message-time {
+      font-size: 11px;
+      color: #999;
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    .chat-message.assistant .message-time {
+      text-align: left;
+    }
+
+    .message-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      font-size: 11px;
+      color: #999;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chat-message.user .message-meta {
+      border-top-color: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .message-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .message-meta-item i {
+      font-size: 10px;
+    }
+
+    .response-time {
+      color: #2196F3;
+    }
+
+    .chat-message.user .response-time {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .round-number {
+      color: #666;
+    }
+
+    .chat-message.user .round-number {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .model-type {
+      color: #2196F3;
+      font-weight: 500;
+    }
+
+    .chat-message.user .model-type {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      padding: 14px 18px;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2196F3;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+      }
+      30% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+    }
+
+    /* 输入区域 */
+    .input-container {
+      padding: 20px 32px;
+      background: #fff;
+      border-top: none;
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start
+    }
+
+    .input-box {
+      flex: 1;
+      position: relative;
+    }
+
+    .input-box textarea {
+      width: 100%;
+      min-height: 50px;
+      max-height: 150px;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      transition: all 0.3s;
+      background: #E3F2FD;
+      color: #333;
+    }
+
+    .input-box textarea:focus {
+      outline: none;
+      background: #BBDEFB;
+      color: #333;
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.12);
+    }
+
+    .input-box textarea::placeholder {
+      color: #999;
+    }
+
+    .input-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .input-actions button {
+      padding: 6px 12px;
+      border: none;
+      background: #f0f0f0;
+      color: #666;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .input-actions button:hover {
+      background: #e0e0e0;
+    }
+
+    .send-button {
+      padding: 12px 32px;
+      background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .send-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    }
+
+    .send-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* 欢迎消息 */
+    .welcome-message {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .welcome-message i {
+      font-size: 64px;
+      color: #2196F3;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .welcome-message h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .welcome-message p {
+      font-size: 14px;
+      line-height: 1.8;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .suggested-questions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .suggested-question {
+      padding: 10px 18px;
+      background: #f0f0f0;
+      border: none;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .suggested-question:hover {
+      background: #2196F3;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    /* 语音按钮与状态 */
+    .voice-button {
+      padding: 10px 14px;
+      border: none;
+      background: #E3F2FD;
+      color: #1565C0;
+      border-radius: 10px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .voice-button.active {
+      background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    }
+
+    .voice-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .voice-status {
+      color: #1565C0;
+      font-size: 12px;
+      background: #E3F2FD;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    /* 滚动条样式 */
+    .chat-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 3px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb:hover {
+      background: #999;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        height: calc(100vh - 20px);
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .header-info {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .message-bubble {
+        max-width: 85%;
+      }
+
+      .input-wrapper {
+        flex-direction: column;
+      }
+
+      .send-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    单独使用说明：本页面不依赖任何后端接口，仅通过 WebSocket 接收并展示数据。
-    请在下方脚本中的 WS_URL 处填写你的 WebSocket 地址；
-    也可在加载本页前设置 window.WS_URL 覆盖（例如在另一个 script 标签中）。
-  -->
-  <div id="app"></div>
-
-  <script>
-    (function () {
-    const Vue = window.Vue;
-    const ElementPlus = window.ElementPlus;
-    const { createApp, ref, computed, onMounted, onBeforeUnmount, watch, nextTick } = Vue;
-
-    // ========== WebSocket 地址：可直接改此处，或用 window.WS_URL 覆盖 ==========
-    const WS_URL = 'ws://121.89.82.133:5008/ws/subscribe';
-
-    const RECOGNITION_CLASS_MAP = {
-      integrated_machine_drive_end_top_cover: ['一体机驱动端顶部盖板', [153, 138, 30]],
-      integrated_machine_motor: ['一体机电机', [71, 157, 204]],
-      integrated_machine_control_cabinet: ['一体机控制箱', [25, 73, 127]],
-      integrated_machine_dc_bus_indicator_window: ['一体机直流母线指示窗', [63, 127, 71]],
-      integrated_machine_mobile_substation: ['一体机移动变电站', [78, 63, 127]],
-      integrated_machine_cooling_water_inlet: ['一体机冷却水进水口', [122, 44, 127]],
-      integrated_machine_cooling_water_outlet: ['一体机冷却水出水口', [168, 112, 88]],
-      shearer_drum: ['采煤机滚筒', [89, 178, 62]],
-      shearer_rocker_arm: ['采煤机摇臂', [44, 127, 112]],
-      shearer_haulage_unit: ['采煤机牵引部', [50, 204, 40]],
-      shearer_cutting_wheel: ['采煤机截割轮', [119, 35, 178]],
-      shearer_scraper_conveyor: ['采煤机刮板输送机', [35, 178, 102]],
-	    circuit_breaker_qf1:['断路器 QF1',[210, 95, 55]],
-	    socket:['插座',[162, 162, 178]],
-	    relay_board_a6:['继电器板 A6',[55, 125, 210]],
-	    can_bridge_a1_a2:['CAN 桥接模块 A1/A2',[200, 75, 140]],
-	    rotary_switch_sa1:['旋转开关 SA1',[95, 185, 85]],
-	    switching_power_supply_sg1_24v:['开关电源 SG1 24V',[185, 125, 45]],
-	    intrinsically_safe_power_supply_sg2:['本安电源 SG2',[75, 55, 195]],
-	    plc_expansion_module:['PLC 扩展模块',[220, 160, 40]],
-	    optocoupler_board_a3_a4_a5:['光耦板 A3/A4/A5',[45, 165, 155]],
-	    amp_connector_xp1_xp2:['AMP 连接器 XP1/XP2',[195, 85, 115]],
-	    rs485_to_tcp_module:['RS485 转 TCP 模块',[115, 145, 210]],
-	    pilot_module_b2_b3_b4:['先导模块 B2/B3/B4',[175, 95, 55]],
-	    Wireless_Router_WH1:['无线路由器 WH1',[148, 152, 158]],
-	    terminal_block_x1:['接线端子 X1',[85, 175, 125]],
-	    terminal_block_x2:['接线端子 X2',[205, 115, 85]],
-	    shearer_electrical_control_box:['采煤机电控箱',[125, 85, 195]],
-	    shearer_operation_panel:['采煤机操作面板',[195, 145, 65]], 
-	    shearer_start_stop_button_and_manual_control:['采煤机启停按钮及手动控制',[65, 145, 185]],
-	    shearer_manual_panel:['采煤机手动面板',[185, 65, 125]],
-	    shearer_gas_detector:['采煤机瓦斯检测仪',[145, 185, 85]],
-	    shearer_main_power_cable:['采煤机主电源电缆',[105, 115, 205]],
-	    shearer_rocker_arm_hydraulic_hose:['采煤机摇臂液压软管',[205, 105, 95]],
-	    hydraulic_support_connecting_rod:['液压支架连杆',[95, 205, 155]],
-	    hydraulic_support_top_beam:['液压支架顶梁',[155, 95, 205]],
-	    hydraulic_support_front_beam:['液压支架前梁',[205, 165, 75]],
-	    hydraulic_support_shield_plate:['液压支架护帮板',[75, 205, 185]],
-	    hydraulic_support_rear_cylinder:['液压支架后立柱',[185, 75, 155]],
-	    hydraulic_support_main_cylinder:['液压支架主立柱',[155, 205, 95]],
-	    hydraulic_support_push_mechanism:['液压支架推移机构',[115, 75, 205]],
-	    hydraulic_support_base:['液压支架底座',[205, 95, 165]],
-	    hydraulic_controller:['液压控制器',[95, 155, 205]],
-	    hydraulic_safety_valve:['液压安全阀',[205, 125, 95]],
-	    hydraulic_check_valve:['液压单向阀',[125, 205, 115]],
-	    hydraulic_solenoid_valve:['液压电磁阀',[115, 95, 205]],
-	    hydraulic_ehc:['液压 EHC 控制器',[205, 185, 95]],
-	    hydraulic_horn:['液压喇叭',[95, 115, 185]],
-	    hydraulic_controller_wiring:['液压控制器接线',[185, 205, 95]],
-	    hydraulic_coupler:['液压耦合器',[175, 115, 205]],
-	    hydraulic_repeater:['液压中继器',[205, 95, 115]],
-	    roadheader_cutting_head:['掘进机截割头',[115, 205, 175]],
-	    roadheader_shovel_plate:['掘进机铲板',[205, 135, 95]],
-	    roadheader_star_wheel:['掘进机星轮',[135, 95, 205]],
-	    roadheader_track:['掘进机履带',[95, 205, 135]],
-	    roadheader_drive_sprocket:['掘进机驱动链轮',[205, 95, 135]],
-	    roadheader_roof_bolter:['掘进机锚杆钻机',[135, 205, 95]],
-	    roadheader_telescopic_boom:['掘进机伸缩臂',[95, 135, 205]],
-	    roadheader_lifting_cylinder:['掘进机升降油缸',[205, 175, 115]],
-	    roadheader_control_station:['掘进机控制台',[175, 205, 115]],
-	    roadheader_drive_unit:['掘进机驱动单元',[115, 175, 205]]
-    };
-
-    const normalizeClassKey = (key) => key.trim().toLowerCase().replace(/\s+/g, '_');
-    const findClassInMap = (className) => {
-      if (RECOGNITION_CLASS_MAP[className]) return RECOGNITION_CLASS_MAP[className];
-      const normalized = normalizeClassKey(className);
-      for (const key in RECOGNITION_CLASS_MAP) {
-        if (normalizeClassKey(key) === normalized) return RECOGNITION_CLASS_MAP[key];
-      }
-      return null;
-    };
-    const translateClassName = (className) => {
-      const item = findClassInMap(className);
-      return item ? item[0] : className;
-    };
-    const getClassColor = (className) => {
-      const item = findClassInMap(className);
-      if (!item || !Array.isArray(item[1]) || item[1].length < 3) return '';
-      const [r, g, b] = item[1];
-      return `rgb(${r}, ${g}, ${b})`;
-    };
-
-    const MAX_WS_DATA_LIST_SIZE = 100;
-
-    createApp({
-      setup() {
-        const ws = ref(null);
-        const wsConnectionStatus = ref('disconnected');
-        const wsDataList = ref([]);
-        const selectedDataIndex = ref(-1);
-        /** 空字符串表示「全部设备」 */
-        const filterDeviceId = ref('');
-        const imageRef = ref(null);
-        const canvasRef = ref(null);
-        let resizeObserver = null;
-
-        function normalizeDeviceId(data) {
-          const raw = data && data.device_id;
-          return raw !== undefined && raw !== null && String(raw).trim() !== ''
-            ? String(raw)
-            : '未知设备';
-        }
-
-        const selectedData = computed(() => {
-          if (selectedDataIndex.value >= 0 && selectedDataIndex.value < wsDataList.value.length) {
-            return wsDataList.value[selectedDataIndex.value].data;
-          }
-          return null;
-        });
-
-        /** 按 device_id 分组，保持各自在总列表中的原始 index，便于点击后选中对应条目 */
-        const deviceGroups = computed(() => {
-          const list = wsDataList.value;
-          const order = [];
-          const map = new Map();
-          list.forEach((item, index) => {
-            const deviceId = normalizeDeviceId(item.data);
-            if (!map.has(deviceId)) {
-              map.set(deviceId, []);
-              order.push(deviceId);
-            }
-            map.get(deviceId).push({ item, index });
-          });
-          return order.map((deviceId) => ({
-            deviceId,
-            entries: map.get(deviceId),
-          }));
-        });
-
-        const deviceFilterOptions = computed(() =>
-          deviceGroups.value.map((g) => ({
-            value: g.deviceId,
-            count: g.entries.length,
-          }))
-        );
-
-        const filteredDeviceGroups = computed(() => {
-          const fid = filterDeviceId.value;
-          if (!fid) return deviceGroups.value;
-          return deviceGroups.value.filter((g) => g.deviceId === fid);
-        });
-
-        const filteredEntryCount = computed(() =>
-          filteredDeviceGroups.value.reduce((n, g) => n + g.entries.length, 0)
-        );
-
-        watch(filterDeviceId, (v) => {
-          if (v === undefined || v === null) {
-            filterDeviceId.value = '';
-            return;
-          }
-          const fid = filterDeviceId.value;
-          if (!fid) return;
-          const idx = selectedDataIndex.value;
-          if (idx < 0 || idx >= wsDataList.value.length) return;
-          if (normalizeDeviceId(wsDataList.value[idx].data) !== fid) {
-            selectedDataIndex.value = -1;
-          }
-        });
-
-        const selectedImageData = computed(() => {
-          if (!selectedData.value || !selectedData.value.image_data) return '';
-          const d = selectedData.value.image_data;
-          return d.startsWith('data:image') ? d : `data:image/jpeg;base64,${d}`;
-        });
-
-        const wsStatusText = computed(() => {
-          switch (wsConnectionStatus.value) {
-            case 'connected': return '已连接';
-            case 'connecting': return '连接中...';
-            case 'disconnected': return '未连接';
-            default: return '未知';
-          }
-        });
-
-        function getImageSrcFromWSData(imageData) {
-          if (!imageData) return '';
-          return imageData.startsWith('data:image') ? imageData : `data:image/jpeg;base64,${imageData}`;
-        }
-
-        function connectWebSocket() {
-          try {
-            if (!WS_URL || typeof WS_URL !== 'string') {
-              ElementPlus.ElMessage.error('请配置 WebSocket 地址（修改本文件中 WS_URL 或设置 window.WS_URL）');
-              return;
-            }
-            if (ws.value) {
-              ws.value.close();
-              ws.value = null;
-            }
-            wsConnectionStatus.value = 'connecting';
-            ws.value = new WebSocket(WS_URL);
-            ws.value.onopen = () => {
-              wsConnectionStatus.value = 'connected';
-              ElementPlus.ElMessage.success('WebSocket 连接已建立');
-            };
-            ws.value.onmessage = (event) => {
-              try {
-                const data = JSON.parse(event.data);
-                handleWSData(data);
-              } catch (e) {
-                ElementPlus.ElMessage.error('接收数据格式错误');
-              }
-            };
-            ws.value.onerror = () => {
-              ElementPlus.ElMessage.error('WebSocket 连接错误');
-              wsConnectionStatus.value = 'disconnected';
-            };
-            ws.value.onclose = () => {
-              wsConnectionStatus.value = 'disconnected';
-              ElementPlus.ElMessage.warning('WebSocket 连接已断开');
-            };
-          } catch (error) {
-            ElementPlus.ElMessage.error('连接 WebSocket 失败：' + (error && error.message ? error.message : '请检查地址与网络'));
-            wsConnectionStatus.value = 'disconnected';
-          }
-        }
-
-        function formatTimestamp(ts) {
-          if (!ts) return '-';
-          try {
-            return new Date(ts).toLocaleString('zh-CN', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit'
-            });
-          } catch (e) {
-            return ts;
-          }
-        }
-
-        function formatBoundingBox(box) {
-          if (!box || !box.points || box.points.length !== 4) return '-';
-          const labels = ['左上', '右上', '右下', '左下'];
-          return box.points.map((point, i) => `${labels[i]}: (${(point.x * 100).toFixed(1)}%, ${(point.y * 100).toFixed(1)}%)`).join('; ');
-        }
-
-        function handleWSData(data) {
-          const dataItem = {
-            id: data.image_id || 'data-' + Date.now() + '-' + Math.random().toString(36).slice(2, 11),
-            data: { ...data },
-            receiveTime: Date.now()
-          };
-          wsDataList.value.push(dataItem);
-          if (wsDataList.value.length > MAX_WS_DATA_LIST_SIZE) {
-            wsDataList.value.splice(0, wsDataList.value.length - MAX_WS_DATA_LIST_SIZE);
-          }
-          selectedDataIndex.value = wsDataList.value.length - 1;
-          setTimeout(() => {
-            const container = document.querySelector('.data-list-container');
-            if (container) container.scrollTop = container.scrollHeight;
-          }, 100);
-        }
-
-        function selectDataItem(index) {
-          if (index >= 0 && index < wsDataList.value.length) selectedDataIndex.value = index;
-        }
-
-        function clearDataList() {
-          ElementPlus.ElMessageBox.confirm('确定要清空所有数据吗？', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            wsDataList.value = [];
-            selectedDataIndex.value = -1;
-            filterDeviceId.value = '';
-            ElementPlus.ElMessage.success('数据已清空');
-          }).catch(() => {});
-        }
-
-        function closeWebSocket() {
-          if (ws.value) {
-            ws.value.close();
-            ws.value = null;
-          }
-          wsConnectionStatus.value = 'disconnected';
-        }
-
-        function reconnectWebSocket() {
-          closeWebSocket();
-          ElementPlus.ElMessage.info('正在重新连接...');
-          connectWebSocket();
-        }
-
-        function drawBoundingBoxes() {
-          nextTick(() => {
-            const img = imageRef.value;
-            const canvas = canvasRef.value;
-            const sel = selectedData.value;
-            if (!img || !canvas || !sel) return;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return;
-            if (!img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
-              img.onload = () => drawBoundingBoxes();
-              return;
-            }
-            const imgRect = img.getBoundingClientRect();
-            const displayWidth = imgRect.width;
-            const displayHeight = imgRect.height;
-            if (displayWidth === 0 || displayHeight === 0) return;
-            const canvasWrapper = canvas.parentElement;
-            if (!canvasWrapper) return;
-            const wrapperRect = canvasWrapper.getBoundingClientRect();
-            const imgOffsetX = imgRect.left - wrapperRect.left;
-            const imgOffsetY = imgRect.top - wrapperRect.top;
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = displayWidth * dpr;
-            canvas.height = displayHeight * dpr;
-            canvas.style.width = displayWidth + 'px';
-            canvas.style.height = displayHeight + 'px';
-            canvas.style.left = imgOffsetX + 'px';
-            canvas.style.top = imgOffsetY + 'px';
-            ctx.scale(dpr, dpr);
-            ctx.clearRect(0, 0, displayWidth, displayHeight);
-            const scaleX = displayWidth / img.naturalWidth;
-            const scaleY = displayHeight / img.naturalHeight;
-            const fallbackColors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080'];
-            if (sel.recognition_results?.length) {
-              sel.recognition_results.forEach((result, index) => {
-                if (!result.bounding_box?.points || result.bounding_box.points.length !== 4) return;
-                const color = getClassColor(result.class_name) || fallbackColors[index % fallbackColors.length];
-                const points = result.bounding_box.points.map((p) => ({
-                  x: p.x * img.naturalWidth * scaleX,
-                  y: p.y * img.naturalHeight * scaleY
-                }));
-                ctx.beginPath();
-                ctx.moveTo(points[0].x, points[0].y);
-                for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-                ctx.closePath();
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 3;
-                ctx.stroke();
-                const labelText = translateClassName(result.class_name);
-                ctx.font = 'bold 14px Arial';
-                const lw = ctx.measureText(labelText).width + 10;
-                const lh = 24;
-                const lx = points[0].x;
-                const ly = Math.max(points[0].y - 5, lh);
-                ctx.fillStyle = color;
-                ctx.fillRect(lx, ly - lh, lw, lh);
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillText(labelText, lx + 5, ly - 5);
-              });
-            }
-          });
-        }
-
-        function handleResize() {
-          if (selectedImageData.value && selectedData.value) {
-            requestAnimationFrame(() => drawBoundingBoxes());
-          }
-        }
-
-        function setupResizeObserver() {
-          if (!imageRef.value || !canvasRef.value) return;
-          if (resizeObserver) resizeObserver.disconnect();
-          resizeObserver = new ResizeObserver(() => handleResize());
-          resizeObserver.observe(imageRef.value);
-          const wrapper = canvasRef.value.parentElement;
-          if (wrapper) resizeObserver.observe(wrapper);
-        }
-
-        function onImageError() {
-          ElementPlus.ElMessage.error('设备图片加载失败，请检查图片路径');
-        }
-
-        watch([selectedData, selectedImageData], () => {
-          if (selectedImageData.value && selectedData.value) {
-            nextTick(() => {
-              if (resizeObserver) resizeObserver.disconnect();
-              setupResizeObserver();
-              drawBoundingBoxes();
-            });
-          }
-        }, { deep: true });
-
-        onMounted(() => {
-          window.addEventListener('resize', handleResize);
-          nextTick(() => setupResizeObserver());
-          ElementPlus.ElMessage.info('正在连接 WebSocket...');
-          connectWebSocket();
-        });
-
-        onBeforeUnmount(() => {
-          if (resizeObserver) { resizeObserver.disconnect(); resizeObserver = null; }
-          closeWebSocket();
-          window.removeEventListener('resize', handleResize);
-        });
-
-        return {
-          wsConnectionStatus,
-          wsDataList,
-          filterDeviceId,
-          deviceFilterOptions,
-          filteredDeviceGroups,
-          filteredEntryCount,
-          selectedDataIndex,
-          selectedData,
-          selectedImageData,
-          wsStatusText,
-          imageRef,
-          canvasRef,
-          closeWebSocket,
-          reconnectWebSocket,
-          clearDataList,
-          selectDataItem,
-          formatTimestamp,
-          formatBoundingBox,
-          translateClassName,
-          normalizeDeviceId,
-          drawBoundingBoxes,
-          onImageError
-        };
-      },
-      template: `
-<div class="page-container">
-  <div class="page-header">
-    <h1 class="page-title">煤矿设备检修辅助系统</h1>
-    <p class="page-description">混合现实设备巡检，沉浸式设备状态监控与维护指导</p>
-  </div>
-
-  <div class="content-card">
-    <div class="card-header">
-      <div class="card-title">
-        <iconify-icon icon="fa:cube"></iconify-icon> MR 巡检数据接收
-      </div>
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <el-tag :type="wsConnectionStatus === 'connected' ? 'success' : wsConnectionStatus === 'connecting' ? 'warning' : 'danger'">
-          {{ wsStatusText }}
-        </el-tag>
-        <el-button @click="reconnectWebSocket">
-          <iconify-icon icon="fa:sync-alt"></iconify-icon> 重新连接
-        </el-button>
-        <el-button type="primary" @click="closeWebSocket">
-          <iconify-icon icon="fa:unlink"></iconify-icon> 断开连接
-        </el-button>
+  <div class="container">
+    <!-- 头部 -->
+    <div class="header">
+      <h1>
+        <img src="logo.jpg" alt="Logo" class="header-logo">
+        <i class="fa fa-comments"></i>
+        AI人工智能互动式播报系统
+      </h1>
+      <div class="header-info">
+        <div class="model-selector">
+          <i class="fa fa-cog"></i>
+          <select id="modelSelect">
+            <option value="qwen3">Qwen3 大语言模型</option>
+            <option value="deepseek">DeepSeek 大语言模型</option>
+          </select>
+        </div>
+        <div class="context-indicator">
+          <i class="fa fa-history"></i>
+          <span id="contextCount">对话轮次: 0</span>
+        </div>
+        <div class="voice-status" id="voiceStatus">
+          <i class="fa fa-microphone"></i> 语音空闲
+        </div>
+        <div class="reminder-button" id="reminderButton" onclick="openReminderModal()">
+          <i class="fa fa-bell"></i> 三会一课提醒
+        </div>
       </div>
     </div>
-      <div class="card-content">
-        <div class="inspection-layout">
-          <div class="data-list-panel">
-            <div class="data-list-header">
-              <h3>数据列表 (共 {{ wsDataList.length }} 条<span v-if="filterDeviceId">，当前筛选 {{ filteredEntryCount }} 条</span>)</h3>
-              <el-button type="danger" size="small" :disabled="wsDataList.length === 0" @click="clearDataList">
-                <iconify-icon icon="fa:trash"></iconify-icon> 清空数据
-              </el-button>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <!-- 对话区域 -->
+      <div class="chat-container" id="chatContainer">
+        <div class="welcome-message" id="welcomeMessage">
+          <i class="fa fa-graduation-cap"></i>
+          <h2>欢迎使用党建阵地知识问答系统</h2>
+          <p>
+            本系统基于Qwen3/DeepSeek大语言模型，专注于党建阵地相关知识问答。
+            您可以询问关于党的理论、党史、党建实践、组织建设、思想教育等相关问题。
+            系统支持多轮对话，能够理解上下文，为您提供专业、准确的回答。
+          </p>
+          
+          <!-- 三会一课行程提醒 -->
+          <div class="schedule-reminder" id="scheduleReminder">
+            <div class="schedule-reminder-title">
+              <i class="fa fa-calendar-check-o"></i>
+              三会一课行程提醒
             </div>
-            <div v-show="wsDataList.length > 0" class="data-list-filter">
-              <span class="filter-label">按设备筛选</span>
-              <el-select
-                v-model="filterDeviceId"
-                placeholder="全部设备"
-                clearable
-                filterable
-                size="small"
-                style="width: 100%;"
-              >
-                <el-option label="全部设备" value="" />
-                <el-option
-                  v-for="opt in deviceFilterOptions"
-                  :key="opt.value"
-                  :label="opt.value + '（' + opt.count + ' 条）'"
-                  :value="opt.value"
-                />
-              </el-select>
-            </div>
-            <div class="data-list-container">
-              <div v-if="wsDataList.length === 0" class="empty-data-list">
-                <iconify-icon icon="fa:inbox" style="font-size: 48px; color: #ccc;"></iconify-icon>
-                <p>暂无数据，等待接收...</p>
-              </div>
-              <div v-for="group in filteredDeviceGroups" :key="group.deviceId" class="device-group-block">
-                <div class="device-group-title">
-                  <iconify-icon icon="fa:server"></iconify-icon>
-                  <span class="device-group-title-text">设备 ID: {{ group.deviceId }}</span>
-                  <el-tag size="small" type="info">{{ group.entries.length }} 条</el-tag>
-                </div>
-                <div
-                  v-for="entry in group.entries"
-                  :key="entry.item.id"
-                  class="data-list-item"
-                  :class="{ active: selectedDataIndex === entry.index }"
-                  @click="selectDataItem(entry.index)"
-                >
-                  <div class="data-item-header">
-                    <span class="data-item-index">#{{ entry.index + 1 }}</span>
-                    <el-tag :type="entry.item.data.status === 'success' ? 'success' : 'danger'" size="small">
-                      {{ entry.item.data.status === 'success' ? '成功' : '失败' }}
-                    </el-tag>
-                  </div>
-                  <div class="data-item-info">
-                    <div class="data-item-row">
-                      <span class="data-item-label">设备ID:</span>
-                      <span class="data-item-value">{{ normalizeDeviceId(entry.item.data) }}</span>
-                    </div>
-                    <div class="data-item-row">
-                      <span class="data-item-label">时间:</span>
-                      <span class="data-item-value">{{ formatTimestamp(entry.item.data.timestamp) }}</span>
-                    </div>
-                    <div class="data-item-row">
-                      <span class="data-item-label">操作:</span>
-                      <span class="data-item-value">{{ entry.item.data.operation_type }}</span>
-                    </div>
-                    <div class="data-item-row">
-                      <span class="data-item-label">目标类:</span>
-                      <span class="data-item-value">{{ translateClassName(entry.item.data.target_class) }}</span>
-                    </div>
-                    <div class="data-item-row" v-if="entry.item.data.recognition_results && entry.item.data.recognition_results.length > 0">
-                      <span class="data-item-label">识别数:</span>
-                      <span class="data-item-value">{{ entry.item.data.recognition_results.length }} 个</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div class="schedule-reminder-subtitle" id="scheduleSubtitle"></div>
+            <div class="schedule-items" id="scheduleItems"></div>
           </div>
 
-          <div class="data-detail-panel">
-            <div v-if="selectedData" class="data-detail-content">
-              <div class="inspection-viewer">
-                <div class="device-image-container">
-                  <div v-if="selectedImageData" class="canvas-wrapper">
-                    <img
-                      ref="imageRef"
-                      :src="selectedImageData"
-                      alt="设备巡检图片"
-                      class="device-image"
-                      @load="drawBoundingBoxes"
-                      @error="onImageError"
-                    />
-                    <canvas ref="canvasRef" class="bounding-box-canvas"></canvas>
-                  </div>
-                  <div v-else class="no-image-placeholder">
-                    <iconify-icon icon="fa:image" style="font-size: 48px; color: #666;"></iconify-icon>
-                    <p>无图片数据</p>
-                  </div>
-                </div>
-              </div>
+          <div class="suggested-questions">
+            <div class="suggested-question" onclick="askQuestion('什么是党建阵地？')">什么是党建阵地？</div>
+            <div class="suggested-question" onclick="askQuestion('如何加强基层党组织建设？')">如何加强基层党组织建设？</div>
+            <div class="suggested-question" onclick="askQuestion('党的组织生活有哪些形式？')">党的组织生活有哪些形式？</div>
+            <div class="suggested-question" onclick="askQuestion('党员的权利和义务有哪些？')">党员的权利和义务有哪些？</div>
+          </div>
+        </div>
+      </div>
 
-              <div class="recognition-results">
-                <div class="results-header">
-                  <h3>识别结果详情</h3>
-                  <el-tag :type="selectedData.status === 'success' ? 'success' : 'danger'">
-                    {{ selectedData.status === 'success' ? '识别成功' : '识别失败' }}
-                  </el-tag>
-                </div>
-                <div class="results-info">
-                  <div class="info-item">
-                    <span class="info-label">设备ID:</span>
-                    <span class="info-value">{{ normalizeDeviceId(selectedData) }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="info-label">用户ID:</span>
-                    <span class="info-value">{{ selectedData.user_id }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="info-label">故障ID:</span>
-                    <span class="info-value">{{ selectedData.fault_id }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="info-label">操作类型:</span>
-                    <span class="info-value">{{ selectedData.operation_type }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="info-label">目标类:</span>
-                    <span class="info-value">{{ translateClassName(selectedData.target_class) }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="info-label">故障状态:</span>
-                    <el-tag :type="selectedData.fault_status ? 'success' : 'warning'">
-                      {{ selectedData.fault_status ? '已解决' : '未解决' }}
-                    </el-tag>
-                  </div>
-                  <div class="info-item" v-if="selectedData.fault_description">
-                    <span class="info-label">故障描述:</span>
-                    <span class="info-value">{{ selectedData.fault_description }}</span>
-                  </div>
-                  <div class="info-item" v-if="selectedData.troubleshoot_step">
-                    <span class="info-label">排障步骤:</span>
-                    <span class="info-value">{{ selectedData.troubleshoot_step }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="info-label">图片ID:</span>
-                    <span class="info-value">{{ selectedData.image_id }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="info-label">时间戳:</span>
-                    <span class="info-value">{{ formatTimestamp(selectedData.timestamp) }}</span>
-                  </div>
-                </div>
-                <div v-if="selectedData.recognition_results && selectedData.recognition_results.length > 0" class="recognition-list">
-                  <h4>识别到的目标 ({{ selectedData.recognition_results.length }}):</h4>
-                  <div class="recognition-items">
-                    <div v-for="(result, index) in selectedData.recognition_results" :key="index" class="recognition-item">
-                      <div class="recognition-item-header">
-                        <span class="class-name">{{ translateClassName(result.class_name) }}</span>
-                        <el-tag :type="result.confidence > 0.7 ? 'success' : result.confidence > 0.5 ? 'warning' : 'danger'">
-                          置信度: {{ (result.confidence * 100).toFixed(2) }}%
-                        </el-tag>
-                      </div>
-                      <div v-if="result.bounding_box" class="bounding-box-info">
-                        <span>边界框坐标:</span>
-                        <span class="coordinates">{{ formatBoundingBox(result.bounding_box) }}</span>
-                      </div>
-                      <div v-if="result.attributes" class="attributes-info">
-                        <span>属性信息:</span>
-                        <pre>{{ JSON.stringify(result.attributes, null, 2) }}</pre>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <!-- 输入区域 -->
+      <div class="input-container">
+        <div class="input-wrapper">
+          <div class="input-box">
+            <textarea 
+              id="messageInput" 
+              placeholder="请输入您关于党建阵地的问题..." 
+              rows="1"
+            ></textarea>
+            <div class="input-actions">
+            <button class="voice-button" id="voiceButton">
+              <i class="fa fa-microphone"></i> 语音输入
+            </button>
+            <label class="toggle">
+              <input type="checkbox" id="ttsToggle" checked>
+              语音播报回答
+            </label>
+              <button onclick="clearChat()">
+                <i class="fa fa-trash"></i> 清空对话
+              </button>
+              <button onclick="exportChat()">
+                <i class="fa fa-download"></i> 导出对话
+              </button>
             </div>
-            <div v-else class="no-selected-data">
-              <iconify-icon icon="fa:hand-pointer" style="font-size: 64px; color: #ccc;"></iconify-icon>
-              <p>请从左侧列表中选择一条数据查看详情</p>
+          </div>
+          <button class="send-button" id="sendButton" onclick="sendMessage()">
+            <i class="fa fa-paper-plane"></i>
+            发送
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三会一课提醒弹窗 -->
+  <div class="reminder-modal" id="reminderModal">
+    <div class="reminder-content">
+      <div class="reminder-header">
+        <h2>
+          <i class="fa fa-bell"></i>
+          三会一课会前提醒
+        </h2>
+        <button class="reminder-close" onclick="closeReminderModal()">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="reminder-body">
+        <!-- 添加提醒表单 -->
+        <div class="reminder-form">
+          <h3 style="margin-bottom: 16px; font-size: 16px; color: #333;">添加新提醒</h3>
+          <form id="reminderForm">
+            <div class="form-group">
+              <label for="reminderType">会议类型 <span style="color: #f44336;">*</span></label>
+              <select id="reminderType" required>
+                <option value="">请选择会议类型</option>
+                <option value="支部党员大会">支部党员大会</option>
+                <option value="支部委员会">支部委员会</option>
+                <option value="党小组会">党小组会</option>
+                <option value="党课">党课</option>
+                <option value="组织生活会">组织生活会</option>
+                <option value="主题党日活动">主题党日活动</option>
+                <option value="其他">其他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reminderDate">会议日期 <span style="color: #f44336;">*</span></label>
+              <input type="date" id="reminderDate" required>
+            </div>
+            <div class="form-group">
+              <label for="reminderTime">会议时间 <span style="color: #f44336;">*</span></label>
+              <input type="time" id="reminderTime" required>
+            </div>
+            <div class="form-group">
+              <label for="reminderLocation">会议地点 <span style="color: #f44336;">*</span></label>
+              <input type="text" id="reminderLocation" placeholder="请输入会议地点" required>
+            </div>
+            <div class="form-group">
+              <label for="reminderTopic">会议议题 <span style="color: #f44336;">*</span></label>
+              <textarea id="reminderTopic" placeholder="请输入会议议题" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="reminderAdvance">提前提醒时间</label>
+              <select id="reminderAdvance">
+                <option value="0">会议开始时</option>
+                <option value="15">提前15分钟</option>
+                <option value="30">提前30分钟</option>
+                <option value="60" selected>提前1小时</option>
+                <option value="120">提前2小时</option>
+                <option value="1440">提前1天</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" onclick="resetReminderForm()">重置</button>
+              <button type="submit" class="btn btn-primary">添加提醒</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 提醒列表 -->
+        <div class="reminder-list">
+          <div class="reminder-list-title">
+            <i class="fa fa-list"></i>
+            已设置的提醒 (<span id="reminderCount">0</span>)
+          </div>
+          <div id="reminderList">
+            <div class="empty-reminders">
+              <i class="fa fa-bell-slash"></i>
+              <div>暂无提醒，请添加新的提醒</div>
             </div>
           </div>
         </div>
       </div>
+    </div>
   </div>
-</div>
-      `
-    })
-      .use(ElementPlus)
-      .mount('#app');
-    })();
-  </script>
 
-  <style>
-    /* 隐藏滚动条但保留滚动（鼠标滚轮 / 触控仍可滚动） */
-    html,
-    body {
-      margin: 0;
-      height: 100%;
-      overflow: hidden;
-    }
-    #app {
-      height: 100%;
-      box-sizing: border-box;
-    }
-    :root {
-      --primary-color: #409EFF;
-      --success-color: #67C23A;
-      --warning-color: #E6A23C;
-      --danger-color: #F56C6C;
-      --text-primary: #303133;
-      --text-secondary: #606266;
-      --text-tertiary: #909399;
-      --border-color: #EBEEF5;
-      --bg-color: #F5F7FA;
-    }
-    .page-container {
-      width: 100%;
-      margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
-      height: 100%;
-      max-height: 100vh;
-      overflow-y: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-      background: var(--bg-color);
-    }
-    .page-container::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
-    .page-header { background: white; padding: 24px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); }
-    .page-title { font-size: 24px; font-weight: 600; color: #303133; margin: 0 0 8px 0; }
-    .page-description { color: #606266; font-size: 14px; margin: 0; }
-    .content-card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); overflow: hidden; }
-    .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); background: #fafafa; display: flex; justify-content: space-between; align-items: center; }
-    .card-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 8px; }
-    .card-content { padding: 24px; }
-    .inspection-layout { display: grid; grid-template-columns: 350px 1fr; gap: 20px; min-height: 600px; }
-    .data-list-panel { background: #f8f9fa; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
-    .data-list-header { padding: 16px; background: white; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-    .data-list-header h3 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary); }
-    .data-list-filter { padding: 12px 16px; background: #fff; border-bottom: 1px solid var(--border-color); }
-    .data-list-filter .filter-label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
-    .data-list-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px;
-      max-height: calc(100vh - 300px);
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .data-list-container::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
-    .empty-data-list { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; color: #999; }
-    .empty-data-list p { margin-top: 16px; font-size: 14px; }
-    .data-list-item { background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
-    .data-list-item:hover { border-color: var(--primary-color); box-shadow: 0 2px 8px rgba(64, 158, 255, 0.15); }
-    .data-list-item.active { border-color: var(--primary-color); background: #ecf5ff; box-shadow: 0 2px 8px rgba(64, 158, 255, 0.2); }
-    .device-group-block { margin-bottom: 16px; }
-    .device-group-block:last-child { margin-bottom: 0; }
-    .device-group-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-primary);
-      background: linear-gradient(135deg, #e8f4ff 0%, #f0f9ff 100%);
-      border: 1px solid #d9ecff;
-      border-radius: 8px;
-    }
-    .device-group-title-text { flex: 1; min-width: 0; word-break: break-all; }
-    .data-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .data-item-index { font-weight: 600; color: var(--text-primary); font-size: 14px; }
-    .data-item-info { display: grid; gap: 6px; }
-    .data-item-row { display: flex; font-size: 12px; }
-    .data-item-row .data-item-label { color: var(--text-secondary); min-width: 60px; margin-right: 8px; }
-    .data-item-row .data-item-value { color: var(--text-primary); flex: 1; word-break: break-all; }
-    .data-detail-panel {
-      background: white;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      overflow-y: auto;
-      max-height: calc(100vh - 300px);
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .data-detail-panel::-webkit-scrollbar {
-      display: none;
-      width: 0;
-      height: 0;
-    }
-    .data-detail-content { padding: 0; }
-    .no-selected-data { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 500px; color: #999; }
-    .no-selected-data p { margin-top: 16px; font-size: 14px; }
-    .device-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-    .device-card { border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; transition: all 0.3s; cursor: pointer; background: white; }
-    .device-card:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); transform: translateY(-2px); }
-    .device-header { padding: 16px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-    .device-name { font-size: 16px; font-weight: 600; color: var(--text-primary); margin: 0; }
-    .device-body { padding: 16px; }
-    .device-info { display: grid; gap: 8px; margin-bottom: 16px; }
-    .info-row { display: flex; justify-content: space-between; font-size: 14px; }
-    .info-label { color: var(--text-secondary); }
-    .info-value { color: var(--text-primary); font-weight: 500; }
-    .device-actions { display: flex; gap: 8px; justify-content: center; }
-    .mr-button { background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer; transition: all 0.3s; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
-    .mr-button:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
-    .mr-button:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
-    .inspection-viewer { background: #1a1a1a; border-radius: 12px; position: relative; margin-bottom: 20px; overflow: hidden; }
-    .device-image-container { position: relative; width: 100%; min-height: 500px; display: flex; align-items: center; justify-content: center; padding: 20px; background: #1a1a1a; }
-    .canvas-wrapper { position: relative; display: inline-block; max-width: 90%; max-height: 460px; }
-    .device-image { max-height: 460px; max-width: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 0 30px rgba(64, 158, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); display: block; }
-    .bounding-box-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; border-radius: 8px; }
-    .no-image-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 460px; color: #999; }
-    .no-image-placeholder p { margin-top: 16px; font-size: 14px; }
-    .recognition-results { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); }
-    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
-    .results-header h3 { margin: 0; font-size: 18px; font-weight: 600; color: var(--text-primary); }
-    .results-info { display: grid; gap: 12px; margin-bottom: 20px; }
-    .info-item { display: flex; align-items: center; font-size: 14px; }
-    .info-item .info-label { color: var(--text-secondary); min-width: 100px; margin-right: 12px; }
-    .info-item .info-value { color: var(--text-primary); font-weight: 500; flex: 1; }
-    .recognition-list { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
-    .recognition-list h4 { margin: 0 0 16px 0; font-size: 16px; font-weight: 600; color: var(--text-primary); }
-    .recognition-items { display: grid; gap: 16px; }
-    .recognition-item { padding: 16px; background: #f8f9fa; border-radius: 8px; border: 1px solid var(--border-color); }
-    .recognition-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .recognition-item-header .class-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
-    .bounding-box-info { margin-top: 8px; font-size: 13px; color: var(--text-secondary); }
-    .bounding-box-info .coordinates { margin-left: 8px; color: var(--text-primary); }
-    .attributes-info { margin-top: 8px; font-size: 13px; color: var(--text-secondary); }
-    .attributes-info pre { margin: 8px 0 0 0; padding: 8px; background: white; border-radius: 4px; border: 1px solid var(--border-color); font-size: 12px; color: var(--text-primary); overflow-x: auto; }
-    .filter-section { background: white; padding: 20px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); }
-    @media (max-width: 768px) { .device-grid { grid-template-columns: 1fr; } }
-  </style>
+  <script src="chat.js"></script>
+  <script src="reminder.js"></script>
 </body>
 </html>
+
