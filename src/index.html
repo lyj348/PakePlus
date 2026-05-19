@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>员工档案高级智能检索系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-users-cog"></i>
+                <span>员工档案智能检索系统</span>
+            </div>
+            <nav class="nav">
+                <a href="#search" class="nav-link active">智能检索</a>
+                <a href="#qa" class="nav-link">智能问答</a>
+                <a href="#statistics" class="nav-link">数据统计</a>
+                <a href="#archive" class="nav-link">档案管理</a>
+                <a href="#analytics" class="nav-link">数据分析</a>
+                <a href="#management" class="nav-link">权限管理</a>
+                <a href="#settings" class="nav-link">系统设置</a>
+            </nav>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="user-name">管理员</span>
+                <div class="dropdown">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main">
+        <!-- 搜索区域 -->
+        <section id="search" class="search-section">
+            <div class="container">
+                <div class="search-header">
+                    <h1>智能员工档案检索</h1>
+                    <p>基于AI与大数据技术，支持自然语言输入，跨字段多维度模糊检索</p>
+                </div>
+                
+                <!-- 智能搜索框 -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="请输入自然语言查询，如：张三的考试成绩、最近入职的员工..." class="search-input">
+                        <button class="search-btn" onclick="performSearch()">
+                            <i class="fas fa-search"></i>
+                            智能检索
+                        </button>
+                    </div>
+                    
+                    <!-- 搜索建议 -->
+                    <div class="search-suggestions" id="searchSuggestions">
+                        <div class="suggestion-item" onclick="setSearchQuery('张三的考试成绩')">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>张三的考试成绩</span>
+                        </div>
+                        <div class="suggestion-item" onclick="setSearchQuery('最近入职的员工')">
+                            <i class="fas fa-user-plus"></i>
+                            <span>最近入职的员工</span>
+                        </div>
+                        <div class="suggestion-item" onclick="setSearchQuery('技术部门的高级工程师')">
+                            <i class="fas fa-code"></i>
+                            <span>技术部门的高级工程师</span>
+                        </div>
+                        <div class="suggestion-item" onclick="setSearchQuery('绩效优秀的员工')">
+                            <i class="fas fa-star"></i>
+                            <span>绩效优秀的员工</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 高级筛选 -->
+                <div class="advanced-filters">
+                    <h3>高级筛选</h3>
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label>部门</label>
+                            <select id="departmentFilter">
+                                <option value="">全部部门</option>
+                                <option value="技术部">技术部</option>
+                                <option value="人事部">人事部</option>
+                                <option value="财务部">财务部</option>
+                                <option value="市场部">市场部</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>职位级别</label>
+                            <select id="levelFilter">
+                                <option value="">全部级别</option>
+                                <option value="初级">初级</option>
+                                <option value="中级">中级</option>
+                                <option value="高级">高级</option>
+                                <option value="专家">专家</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>入职时间</label>
+                            <input type="date" id="joinDateFilter">
+                        </div>
+                        <div class="filter-group">
+                            <label>绩效等级</label>
+                            <select id="performanceFilter">
+                                <option value="">全部等级</option>
+                                <option value="优秀">优秀</option>
+                                <option value="良好">良好</option>
+                                <option value="一般">一般</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="filter-btn" onclick="applyFilters()">
+                        <i class="fas fa-filter"></i>
+                        应用筛选
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 搜索结果区域 -->
+        <section class="results-section">
+            <div class="container">
+                <div class="results-header">
+                    <h2>搜索结果</h2>
+                    <div class="results-stats">
+                        <span id="resultCount">找到 0 条记录</span>
+                        <div class="view-options">
+                            <button class="view-btn active" onclick="switchView('grid')">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-btn" onclick="switchView('list')">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 员工卡片网格 -->
+                <div class="employee-grid" id="employeeGrid">
+                    <!-- 示例员工卡片 -->
+                    <div class="employee-card">
+                        <div class="card-header">
+                            <div class="avatar">
+                                <img src="https://via.placeholder.com/60x60/4F46E5/FFFFFF?text=张" alt="张三">
+                            </div>
+                            <div class="employee-info">
+                                <h3>张三</h3>
+                                <p class="position">高级软件工程师</p>
+                                <p class="department">技术部</p>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn" onclick="viewDetails('1')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" onclick="editEmployee('1')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-row">
+                                <span class="label">工号:</span>
+                                <span class="value">EMP001</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">入职时间:</span>
+                                <span class="value">2022-03-15</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">绩效等级:</span>
+                                <span class="value performance-excellent">优秀</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="tags">
+                                <span class="tag">Java</span>
+                                <span class="tag">Spring Boot</span>
+                                <span class="tag">微服务</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="employee-card">
+                        <div class="card-header">
+                            <div class="avatar">
+                                <img src="https://via.placeholder.com/60x60/10B981/FFFFFF?text=李" alt="李四">
+                            </div>
+                            <div class="employee-info">
+                                <h3>李四</h3>
+                                <p class="position">产品经理</p>
+                                <p class="department">产品部</p>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn" onclick="viewDetails('2')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" onclick="editEmployee('2')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-row">
+                                <span class="label">工号:</span>
+                                <span class="value">EMP002</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">入职时间:</span>
+                                <span class="value">2021-08-20</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">绩效等级:</span>
+                                <span class="value performance-good">良好</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="tags">
+                                <span class="tag">产品设计</span>
+                                <span class="tag">用户研究</span>
+                                <span class="tag">数据分析</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="employee-card">
+                        <div class="card-header">
+                            <div class="avatar">
+                                <img src="https://via.placeholder.com/60x60/F59E0B/FFFFFF?text=王" alt="王五">
+                            </div>
+                            <div class="employee-info">
+                                <h3>王五</h3>
+                                <p class="position">UI设计师</p>
+                                <p class="department">设计部</p>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn" onclick="viewDetails('3')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" onclick="editEmployee('3')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-row">
+                                <span class="label">工号:</span>
+                                <span class="value">EMP003</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">入职时间:</span>
+                                <span class="value">2023-01-10</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">绩效等级:</span>
+                                <span class="value performance-excellent">优秀</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="tags">
+                                <span class="tag">Figma</span>
+                                <span class="tag">Sketch</span>
+                                <span class="tag">Adobe XD</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分页 -->
+                <div class="pagination">
+                    <button class="page-btn" onclick="changePage(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="page-numbers">
+                        <button class="page-number active">1</button>
+                        <button class="page-number">2</button>
+                        <button class="page-number">3</button>
+                    </span>
+                    <button class="page-btn" onclick="changePage(1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 智能问答区域 -->
+        <section id="qa" class="qa-section" style="display: none;">
+            <div class="container">
+                <div class="qa-header">
+                    <h1>智能问答系统</h1>
+                    <p>通过自然语言问答，快速检索员工档案信息</p>
+                </div>
+                
+                <div class="qa-container">
+                    <div class="qa-chat">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message bot-message">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p>您好！我是智能问答助手，可以帮您快速查询员工档案信息。您可以问我：</p>
+                                    <ul class="qa-examples">
+                                        <li>"张三的考试成绩是多少？"</li>
+                                        <li>"技术部有多少员工？"</li>
+                                        <li>"最近入职的员工有哪些？"</li>
+                                        <li>"绩效优秀的员工名单"</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <div class="chat-input-box">
+                                <input type="text" id="qaInput" placeholder="请输入您的问题..." class="chat-input">
+                                <button class="chat-send-btn" onclick="sendQuestion()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                            <div class="quick-questions">
+                                <span class="quick-label">快速提问：</span>
+                                <button class="quick-question-btn" onclick="askQuickQuestion('技术部有多少员工？')">技术部员工数</button>
+                                <button class="quick-question-btn" onclick="askQuickQuestion('绩效优秀的员工有哪些？')">优秀员工</button>
+                                <button class="quick-question-btn" onclick="askQuickQuestion('最近入职的员工')">最近入职</button>
+                                <button class="quick-question-btn" onclick="askQuickQuestion('各部门人员分布')">部门分布</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 数据统计区域 -->
+        <section id="statistics" class="statistics-section" style="display: none;">
+            <div class="container">
+                <div class="statistics-header">
+                    <h1>数据统计中心</h1>
+                    <p>全面汇总统计，支持多维度分类查看</p>
+                </div>
+                
+                <div class="statistics-tabs">
+                    <button class="stat-tab active" onclick="switchStatTab('overview')">总览统计</button>
+                    <button class="stat-tab" onclick="switchStatTab('department')">部门统计</button>
+                    <button class="stat-tab" onclick="switchStatTab('performance')">绩效统计</button>
+                    <button class="stat-tab" onclick="switchStatTab('learning')">学习统计</button>
+                </div>
+                
+                <div class="statistics-content">
+                    <!-- 总览统计 -->
+                    <div id="overview-stat" class="stat-pane active">
+                        <div class="stat-overview-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>总员工数</h3>
+                                    <div class="stat-value" id="totalEmployees">0</div>
+                                    <div class="stat-desc">全公司员工总数</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>部门数量</h3>
+                                    <div class="stat-value" id="totalDepartments">0</div>
+                                    <div class="stat-desc">公司部门总数</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>优秀员工</h3>
+                                    <div class="stat-value" id="excellentEmployees">0</div>
+                                    <div class="stat-desc">绩效优秀员工数</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>培训完成率</h3>
+                                    <div class="stat-value" id="trainingRate">0%</div>
+                                    <div class="stat-desc">员工培训完成比例</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-chart-container">
+                            <h3>数据概览图表</h3>
+                            <canvas id="overviewChart" width="800" height="400"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 部门统计 -->
+                    <div id="department-stat" class="stat-pane">
+                        <div class="department-stats-grid">
+                            <div class="department-stat-card" id="departmentStatsList">
+                                <!-- 动态生成部门统计卡片 -->
+                            </div>
+                        </div>
+                        <div class="stat-chart-container">
+                            <h3>部门人员分布</h3>
+                            <canvas id="departmentStatChart" width="800" height="400"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 绩效统计 -->
+                    <div id="performance-stat" class="stat-pane">
+                        <div class="performance-stats-grid">
+                            <div class="performance-stat-item">
+                                <h4>优秀</h4>
+                                <div class="performance-count" id="excellentCount">0</div>
+                                <div class="performance-percentage" id="excellentPercent">0%</div>
+                            </div>
+                            <div class="performance-stat-item">
+                                <h4>良好</h4>
+                                <div class="performance-count" id="goodCount">0</div>
+                                <div class="performance-percentage" id="goodPercent">0%</div>
+                            </div>
+                            <div class="performance-stat-item">
+                                <h4>一般</h4>
+                                <div class="performance-count" id="averageCount">0</div>
+                                <div class="performance-percentage" id="averagePercent">0%</div>
+                            </div>
+                        </div>
+                        <div class="stat-chart-container">
+                            <h3>绩效分布图表</h3>
+                            <canvas id="performanceStatChart" width="800" height="400"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 学习统计 -->
+                    <div id="learning-stat" class="stat-pane">
+                        <div class="learning-stats-grid">
+                            <div class="learning-stat-item">
+                                <h4>已完成课程</h4>
+                                <div class="learning-count" id="completedCourses">0</div>
+                            </div>
+                            <div class="learning-stat-item">
+                                <h4>进行中课程</h4>
+                                <div class="learning-count" id="inProgressCourses">0</div>
+                            </div>
+                            <div class="learning-stat-item">
+                                <h4>平均学习时长</h4>
+                                <div class="learning-count" id="avgLearningTime">0小时</div>
+                            </div>
+                        </div>
+                        <div class="stat-chart-container">
+                            <h3>学习情况统计</h3>
+                            <canvas id="learningStatChart" width="800" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 档案管理区域 -->
+        <section id="archive" class="archive-section" style="display: none;">
+            <div class="container">
+                <div class="archive-header">
+                    <h1>档案管理中心</h1>
+                    <p>分类管理所有员工档案，方便查看和管理</p>
+                </div>
+                
+                <div class="archive-controls">
+                    <div class="archive-filters">
+                        <select id="archiveCategoryFilter" onchange="filterArchives()">
+                            <option value="all">全部分类</option>
+                            <option value="department">按部门</option>
+                            <option value="position">按职位</option>
+                            <option value="performance">按绩效</option>
+                            <option value="joinDate">按入职时间</option>
+                        </select>
+                        <input type="text" id="archiveSearch" placeholder="搜索档案..." oninput="filterArchives()">
+                        <button class="btn-primary" onclick="exportArchives()">
+                            <i class="fas fa-download"></i>
+                            导出档案
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="archive-categories">
+                    <div class="category-section" id="departmentCategory">
+                        <h3><i class="fas fa-building"></i> 按部门分类</h3>
+                        <div class="category-content" id="departmentArchiveList">
+                            <!-- 动态生成部门分类 -->
+                        </div>
+                    </div>
+                    
+                    <div class="category-section" id="positionCategory">
+                        <h3><i class="fas fa-briefcase"></i> 按职位分类</h3>
+                        <div class="category-content" id="positionArchiveList">
+                            <!-- 动态生成职位分类 -->
+                        </div>
+                    </div>
+                    
+                    <div class="category-section" id="performanceCategory">
+                        <h3><i class="fas fa-chart-line"></i> 按绩效分类</h3>
+                        <div class="category-content" id="performanceArchiveList">
+                            <!-- 动态生成绩效分类 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="archive-list-view" id="archiveListView">
+                    <!-- 列表视图显示所有档案 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 数据分析区域 -->
+        <section id="analytics" class="analytics-section" style="display: none;">
+            <div class="container">
+                <div class="analytics-header">
+                    <h1>数据分析中心</h1>
+                    <p>基于大数据的员工信息深度分析，为决策提供数据支持</p>
+                </div>
+
+                <!-- 数据概览卡片 -->
+                <div class="analytics-overview">
+                    <div class="overview-card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>总员工数</h3>
+                            <div class="card-value">1,247</div>
+                            <div class="card-change positive">+12.5%</div>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>平均绩效</h3>
+                            <div class="card-value">87.3</div>
+                            <div class="card-change positive">+3.2%</div>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>培训完成率</h3>
+                            <div class="card-value">94.2%</div>
+                            <div class="card-change positive">+5.8%</div>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>优秀员工</h3>
+                            <div class="card-value">156</div>
+                            <div class="card-change positive">+8.1%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表分析区域 -->
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>部门人员分布</h3>
+                            <div class="chart-controls">
+                                <select id="departmentChartFilter">
+                                    <option value="all">全部部门</option>
+                                    <option value="tech">技术部</option>
+                                    <option value="product">产品部</option>
+                                    <option value="design">设计部</option>
+                                    <option value="hr">人事部</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="departmentChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>绩效趋势分析</h3>
+                            <div class="chart-controls">
+                                <select id="performanceChartFilter">
+                                    <option value="quarterly">按季度</option>
+                                    <option value="monthly">按月</option>
+                                    <option value="yearly">按年</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="performanceTrendChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学习分析区域 -->
+                <div class="learning-analytics">
+                    <div class="learning-chart">
+                        <div class="chart-header">
+                            <h3>学习完成情况</h3>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="learningChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="learning-stats">
+                        <h3>学习统计</h3>
+                        <div class="stats-list">
+                            <div class="stat-item">
+                                <span class="stat-label">本月新增课程</span>
+                                <span class="stat-value">23</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">平均学习时长</span>
+                                <span class="stat-value">4.2小时/周</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">最受欢迎课程</span>
+                                <span class="stat-value">微服务架构设计</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">认证通过率</span>
+                                <span class="stat-value">89.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 员工技能分析 -->
+                <div class="skills-analytics">
+                    <div class="chart-header">
+                        <h3>技能分布热力图</h3>
+                    </div>
+                    <div class="skills-heatmap">
+                        <div class="skill-category">
+                            <h4>技术技能</h4>
+                            <div class="skill-bars">
+                                <div class="skill-bar">
+                                    <span class="skill-name">Java</span>
+                                    <div class="skill-progress">
+                                        <div class="skill-fill" style="width: 85%"></div>
+                                    </div>
+                                    <span class="skill-percentage">85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <span class="skill-name">Python</span>
+                                    <div class="skill-progress">
+                                        <div class="skill-fill" style="width: 72%"></div>
+                                    </div>
+                                    <span class="skill-percentage">72%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <span class="skill-name">JavaScript</span>
+                                    <div class="skill-progress">
+                                        <div class="skill-fill" style="width: 68%"></div>
+                                    </div>
+                                    <span class="skill-percentage">68%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <span class="skill-name">React</span>
+                                    <div class="skill-progress">
+                                        <div class="skill-fill" style="width: 61%"></div>
+                                    </div>
+                                    <span class="skill-percentage">61%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skill-category">
+                            <h4>管理技能</h4>
+                            <div class="skill-bars">
+                                <div class="skill-bar">
+                                    <span class="skill-name">项目管理</span>
+                                    <div class="skill-progress">
+                                        <div class="skill-fill" style="width: 78%"></div>
+                                    </div>
+                                    <span class="skill-percentage">78%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <span class="skill-name">团队协作</span>
+                                    <div class="skill-progress">
+                                        <div class="skill-fill" style="width: 82%"></div>
+                                    </div>
+                                    <span class="skill-percentage">82%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <span class="skill-name">沟通表达</span>
+                                    <div class="skill-progress">
+                                        <div class="skill-fill" style="width: 75%"></div>
+                                    </div>
+                                    <span class="skill-percentage">75%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 权限管理区域 -->
+        <section id="management" class="management-section" style="display: none;">
+            <div class="container">
+                <div class="management-header">
+                    <h1>权限管理中心</h1>
+                    <p>智能权限管理确保信息安全，精细化控制数据访问权限</p>
+                </div>
+
+                <!-- 权限概览 -->
+                <div class="permission-overview">
+                    <div class="permission-card">
+                        <div class="card-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>系统权限</h3>
+                            <div class="permission-list">
+                                <div class="permission-item">
+                                    <span class="permission-name">数据查看</span>
+                                    <span class="permission-status active">已授权</span>
+                                </div>
+                                <div class="permission-item">
+                                    <span class="permission-name">数据编辑</span>
+                                    <span class="permission-status active">已授权</span>
+                                </div>
+                                <div class="permission-item">
+                                    <span class="permission-name">数据导出</span>
+                                    <span class="permission-status active">已授权</span>
+                                </div>
+                                <div class="permission-item">
+                                    <span class="permission-name">用户管理</span>
+                                    <span class="permission-status active">已授权</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="permission-card">
+                        <div class="card-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>用户角色</h3>
+                            <div class="role-list">
+                                <div class="role-item">
+                                    <div class="role-info">
+                                        <h4>系统管理员</h4>
+                                        <p>拥有所有权限</p>
+                                    </div>
+                                    <div class="role-count">1人</div>
+                                </div>
+                                <div class="role-item">
+                                    <div class="role-info">
+                                        <h4>HR管理员</h4>
+                                        <p>员工信息管理权限</p>
+                                    </div>
+                                    <div class="role-count">3人</div>
+                                </div>
+                                <div class="role-item">
+                                    <div class="role-info">
+                                        <h4>部门主管</h4>
+                                        <p>本部门数据查看权限</p>
+                                    </div>
+                                    <div class="role-count">8人</div>
+                                </div>
+                                <div class="role-item">
+                                    <div class="role-info">
+                                        <h4>普通用户</h4>
+                                        <p>基础查看权限</p>
+                                    </div>
+                                    <div class="role-count">156人</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用户管理 -->
+                <div class="user-management">
+                    <div class="section-header">
+                        <h2>用户管理</h2>
+                        <button class="btn-primary" onclick="addUser()">
+                            <i class="fas fa-plus"></i>
+                            添加用户
+                        </button>
+                    </div>
+
+                    <div class="user-filters">
+                        <div class="filter-group">
+                            <label>角色筛选</label>
+                            <select id="roleFilter">
+                                <option value="">全部角色</option>
+                                <option value="admin">系统管理员</option>
+                                <option value="hr">HR管理员</option>
+                                <option value="manager">部门主管</option>
+                                <option value="user">普通用户</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>状态筛选</label>
+                            <select id="statusFilter">
+                                <option value="">全部状态</option>
+                                <option value="active">活跃</option>
+                                <option value="inactive">非活跃</option>
+                                <option value="suspended">已暂停</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>搜索用户</label>
+                            <input type="text" id="userSearch" placeholder="输入用户名或邮箱">
+                        </div>
+                        <button class="btn-secondary" onclick="filterUsers()">
+                            <i class="fas fa-search"></i>
+                            搜索
+                        </button>
+                    </div>
+
+                    <div class="user-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>用户信息</th>
+                                    <th>角色</th>
+                                    <th>部门</th>
+                                    <th>最后登录</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <img src="https://via.placeholder.com/40x40/4F46E5/FFFFFF?text=A" alt="Admin">
+                                            </div>
+                                            <div class="user-details">
+                                                <div class="user-name">系统管理员</div>
+                                                <div class="user-email">admin@company.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge admin">系统管理员</span></td>
+                                    <td>技术部</td>
+                                    <td>2024-01-15 14:30</td>
+                                    <td><span class="status-badge active">活跃</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-icon" onclick="editUser('1')" title="编辑">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn-icon" onclick="viewUserPermissions('1')" title="权限">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                            <button class="btn-icon danger" onclick="deleteUser('1')" title="删除">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <img src="https://via.placeholder.com/40x40/10B981/FFFFFF?text=H" alt="HR">
+                                            </div>
+                                            <div class="user-details">
+                                                <div class="user-name">HR管理员</div>
+                                                <div class="user-email">hr@company.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge hr">HR管理员</span></td>
+                                    <td>人事部</td>
+                                    <td>2024-01-15 10:15</td>
+                                    <td><span class="status-badge active">活跃</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-icon" onclick="editUser('2')" title="编辑">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn-icon" onclick="viewUserPermissions('2')" title="权限">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                            <button class="btn-icon danger" onclick="deleteUser('2')" title="删除">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <img src="https://via.placeholder.com/40x40/F59E0B/FFFFFF?text=M" alt="Manager">
+                                            </div>
+                                            <div class="user-details">
+                                                <div class="user-name">部门主管</div>
+                                                <div class="user-email">manager@company.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge manager">部门主管</span></td>
+                                    <td>产品部</td>
+                                    <td>2024-01-14 16:45</td>
+                                    <td><span class="status-badge active">活跃</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-icon" onclick="editUser('3')" title="编辑">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn-icon" onclick="viewUserPermissions('3')" title="权限">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                            <button class="btn-icon danger" onclick="deleteUser('3')" title="删除">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 权限设置 -->
+                <div class="permission-settings">
+                    <div class="section-header">
+                        <h2>权限设置</h2>
+                    </div>
+
+                    <div class="permission-matrix">
+                        <div class="matrix-header">
+                            <div class="role-column">角色/权限</div>
+                            <div class="permission-column">数据查看</div>
+                            <div class="permission-column">数据编辑</div>
+                            <div class="permission-column">数据导出</div>
+                            <div class="permission-column">用户管理</div>
+                            <div class="permission-column">系统设置</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="role-name">系统管理员</div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked disabled>
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked disabled>
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked disabled>
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked disabled>
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked disabled>
+                            </div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="role-name">HR管理员</div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked>
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked>
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked>
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="role-name">部门主管</div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked>
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="role-name">普通用户</div>
+                            <div class="permission-cell">
+                                <input type="checkbox" checked>
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                            <div class="permission-cell">
+                                <input type="checkbox">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 安全日志 -->
+                <div class="security-logs">
+                    <div class="section-header">
+                        <h2>安全日志</h2>
+                        <div class="log-controls">
+                            <select id="logLevelFilter">
+                                <option value="">全部级别</option>
+                                <option value="info">信息</option>
+                                <option value="warning">警告</option>
+                                <option value="error">错误</option>
+                            </select>
+                            <button class="btn-secondary" onclick="exportLogs()">
+                                <i class="fas fa-download"></i>
+                                导出日志
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="log-list">
+                        <div class="log-item">
+                            <div class="log-icon info">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-message">用户 admin 登录系统</div>
+                                <div class="log-details">IP: 192.168.1.100 | 时间: 2024-01-15 14:30:25</div>
+                            </div>
+                            <div class="log-level info">信息</div>
+                        </div>
+                        <div class="log-item">
+                            <div class="log-icon warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-message">用户 hr@company.com 尝试访问受限数据</div>
+                                <div class="log-details">IP: 192.168.1.101 | 时间: 2024-01-15 13:45:12</div>
+                            </div>
+                            <div class="log-level warning">警告</div>
+                        </div>
+                        <div class="log-item">
+                            <div class="log-icon error">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-message">用户 manager@company.com 登录失败</div>
+                                <div class="log-details">IP: 192.168.1.102 | 时间: 2024-01-15 12:20:08</div>
+                            </div>
+                            <div class="log-level error">错误</div>
+                        </div>
+                        <div class="log-item">
+                            <div class="log-icon info">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="log-content">
+                                <div class="log-message">用户权限配置已更新</div>
+                                <div class="log-details">操作人: admin | 时间: 2024-01-15 11:15:30</div>
+                            </div>
+                            <div class="log-level info">信息</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 员工详情模态框 -->
+        <div class="modal" id="employeeModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>员工详细信息</h2>
+                    <button class="close-btn" onclick="closeModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="employee-detail">
+                        <div class="detail-header">
+                            <div class="detail-avatar">
+                                <img src="https://via.placeholder.com/120x120/4F46E5/FFFFFF?text=张" alt="张三">
+                            </div>
+                            <div class="detail-info">
+                                <h3>张三</h3>
+                                <p class="detail-position">高级软件工程师</p>
+                                <p class="detail-department">技术部</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-tabs">
+                            <button class="tab-btn active" onclick="switchTab('basic')">基本信息</button>
+                            <button class="tab-btn" onclick="switchTab('performance')">绩效成绩</button>
+                            <button class="tab-btn" onclick="switchTab('learning')">学习记录</button>
+                            <button class="tab-btn" onclick="switchTab('history')">工作履历</button>
+                        </div>
+
+                        <div class="tab-content">
+                            <div id="basic-tab" class="tab-pane active">
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label>工号</label>
+                                        <span>EMP001</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>姓名</label>
+                                        <span>张三</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>部门</label>
+                                        <span>技术部</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>职位</label>
+                                        <span>高级软件工程师</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>入职时间</label>
+                                        <span>2022-03-15</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>联系电话</label>
+                                        <span>138-0000-0000</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>邮箱</label>
+                                        <span>zhangsan@company.com</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>技能标签</label>
+                                        <div class="skill-tags">
+                                            <span class="skill-tag">Java</span>
+                                            <span class="skill-tag">Spring Boot</span>
+                                            <span class="skill-tag">微服务</span>
+                                            <span class="skill-tag">MySQL</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="performance-tab" class="tab-pane">
+                                <div class="performance-chart">
+                                    <h4>绩效趋势</h4>
+                                    <div class="chart-container">
+                                        <canvas id="performanceChart" width="400" height="200"></canvas>
+                                    </div>
+                                </div>
+                                <div class="performance-details">
+                                    <div class="performance-item">
+                                        <span class="period">2024年Q1</span>
+                                        <span class="score excellent">95分</span>
+                                    </div>
+                                    <div class="performance-item">
+                                        <span class="period">2023年Q4</span>
+                                        <span class="score excellent">92分</span>
+                                    </div>
+                                    <div class="performance-item">
+                                        <span class="period">2023年Q3</span>
+                                        <span class="score good">88分</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="learning-tab" class="tab-pane">
+                                <div class="learning-courses">
+                                    <h4>学习课程</h4>
+                                    <div class="course-list">
+                                        <div class="course-item">
+                                            <div class="course-info">
+                                                <h5>微服务架构设计</h5>
+                                                <p>完成时间: 2024-01-15</p>
+                                            </div>
+                                            <div class="course-score">
+                                                <span class="score">98分</span>
+                                                <span class="status completed">已完成</span>
+                                            </div>
+                                        </div>
+                                        <div class="course-item">
+                                            <div class="course-info">
+                                                <h5>Spring Cloud实战</h5>
+                                                <p>完成时间: 2023-12-20</p>
+                                            </div>
+                                            <div class="course-score">
+                                                <span class="score">95分</span>
+                                                <span class="status completed">已完成</span>
+                                            </div>
+                                        </div>
+                                        <div class="course-item">
+                                            <div class="course-info">
+                                                <h5>Docker容器化技术</h5>
+                                                <p>进行中</p>
+                                            </div>
+                                            <div class="course-score">
+                                                <span class="score">-</span>
+                                                <span class="status in-progress">进行中</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="history-tab" class="tab-pane">
+                                <div class="work-history">
+                                    <h4>工作履历</h4>
+                                    <div class="timeline">
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker"></div>
+                                            <div class="timeline-content">
+                                                <h5>高级软件工程师</h5>
+                                                <p>技术部</p>
+                                                <span class="timeline-date">2022-03-15 至今</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker"></div>
+                                            <div class="timeline-content">
+                                                <h5>软件工程师</h5>
+                                                <p>技术部</p>
+                                                <span class="timeline-date">2020-06-01 - 2022-03-14</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 侧边栏 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>快速操作</h3>
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="addEmployee()">
+                    <i class="fas fa-user-plus"></i>
+                    添加员工
+                </button>
+                <button class="quick-action-btn" onclick="exportData()">
+                    <i class="fas fa-download"></i>
+                    导出数据
+                </button>
+                <button class="quick-action-btn" onclick="importData()">
+                    <i class="fas fa-upload"></i>
+                    导入数据
+                </button>
+                <button class="quick-action-btn" onclick="generateReport()">
+                    <i class="fas fa-chart-bar"></i>
+                    生成报告
+                </button>
+            </div>
+            
+            <div class="recent-searches">
+                <h4>最近搜索</h4>
+                <div class="search-history">
+                    <div class="history-item" onclick="setSearchQuery('技术部门员工')">
+                        <i class="fas fa-history"></i>
+                        <span>技术部门员工</span>
+                    </div>
+                    <div class="history-item" onclick="setSearchQuery('绩效优秀')">
+                        <i class="fas fa-history"></i>
+                        <span>绩效优秀</span>
+                    </div>
+                    <div class="history-item" onclick="setSearchQuery('最近入职')">
+                        <i class="fas fa-history"></i>
+                        <span>最近入职</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 加载遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>AI正在智能分析中...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
