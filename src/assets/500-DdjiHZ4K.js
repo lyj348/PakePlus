@@ -1,0 +1,1 @@
+import{_ as o}from"./Error.vue_vue_type_script_setup_true_lang-BLzJ2dDa.js";import{d as t,o as n,j as e,u,a as m}from"./index-BVko5nfx.js";const p=t({name:"Error500",__name:"500",setup(c){const{push:s}=m();return(f,r)=>{const a=o;return n(),e(a,{type:"500",onErrorClick:r[0]||(r[0]=i=>u(s)("/"))})}}});export{p as default};
