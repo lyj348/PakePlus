@@ -1,0 +1,1 @@
+import{b8 as e}from"./index-BVko5nfx.js";const t=()=>e.get({url:"/system/user/profile/get"}),a=s=>e.put({url:"/system/user/profile/update",data:s}),o=(s,r)=>e.put({url:"/system/user/profile/update-password",data:{oldPassword:s,newPassword:r}});export{o as a,t as g,a as u};
