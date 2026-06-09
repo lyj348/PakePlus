@@ -1,0 +1,1 @@
+import{_ as t}from"./DictTypeForm.vue_vue_type_script_setup_true_lang-B6pMmh-8.js";import"./index-BkYPmOvq.js";import"./Dialog.vue_vue_type_style_index_0_lang-BdquuBJj.js";import"./dict.type-BoRgiuWh.js";import"./constants-D0aoFN3l.js";export{t as default};
