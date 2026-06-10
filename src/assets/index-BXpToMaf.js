@@ -1,0 +1,1 @@
+import{b8 as t}from"./index-KvBeQQoQ.js";const r=async a=>await t.get({url:"/exam/train/page",params:a}),s=async a=>await t.post({url:"/exam/train/create",data:a}),e=async a=>await t.get({url:"/exam/question-error-record/get-train-list?userId="+a.userId}),i=async a=>await t.get({url:"/exam/questions/get-train-list",params:a});export{r as a,e as b,s as c,i as g};
