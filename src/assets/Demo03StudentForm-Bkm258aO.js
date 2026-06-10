@@ -1,0 +1,1 @@
+import{_ as o}from"./Demo03StudentForm.vue_vue_type_script_setup_true_lang-CPprKtTL.js";import"./index-KvBeQQoQ.js";import"./Dialog.vue_vue_type_style_index_0_lang-DI0cX4R0.js";import"./index-CXwkKjfG.js";import"./Demo03CourseForm.vue_vue_type_script_setup_true_lang-DJlqiFaa.js";import"./Demo03GradeForm.vue_vue_type_script_setup_true_lang-YdgQsynE.js";export{o as default};
