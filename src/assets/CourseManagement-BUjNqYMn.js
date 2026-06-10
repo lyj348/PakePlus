@@ -1,0 +1,1 @@
+import{_ as o}from"./CourseManagement.vue_vue_type_script_setup_true_lang-CyPVhXbs.js";import"./index-CuCS0KCg.js";import"./course-DRwgu5u1.js";import"./index.vue_vue_type_script_setup_true_lang-BR381HZd.js";import"./index-DikI237-.js";export{o as default};
