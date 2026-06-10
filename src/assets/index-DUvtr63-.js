@@ -1,0 +1,1 @@
+import{b8 as s}from"./index-KvBeQQoQ.js";const a=async t=>await s.get({url:"/exam/test/times-statistics",params:t}),e=async t=>await s.get({url:"/exam/test-result/count-statistics",params:t});export{e as a,a as g};
