@@ -1,0 +1,1 @@
+import{_ as o}from"./UserFaceRecognitionForm.vue_vue_type_script_setup_true_lang-0M5j5PKh.js";import"./index-CuCS0KCg.js";import"./Dialog.vue_vue_type_style_index_0_lang-CVJ550KN.js";import"./index-B_Ae0ck7.js";export{o as default};
