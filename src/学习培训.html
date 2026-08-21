@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧党建综合智能管理平台 - 学习培训</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .train-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .train-stat {
+      background: #fff;
+      border-radius: 8px;
+      padding: 18px 22px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .train-stat .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .train-stat .icon.red { background: linear-gradient(135deg, #d32f2f, #e57373); }
+    .train-stat .icon.blue { background: linear-gradient(135deg, #1976d2, #64b5f6); }
+    .train-stat .icon.orange { background: linear-gradient(135deg, #f57c00, #ffb74d); }
+    .train-stat .icon.green { background: linear-gradient(135deg, #388e3c, #81c784); }
+    .train-stat .num { font-size: 28px; font-weight: 700; color: #222; line-height: 1.2; }
+    .train-stat .label { font-size: 14px; color: #888; margin-top: 2px; }
+    .table-wrap {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .table-wrap::-webkit-scrollbar { display: none; height: 0; }
+    .table {
+      width: 100%;
+      min-width: 1280px;
+      table-layout: auto;
+    }
+    .table th, .table td {
+      vertical-align: middle;
+    }
+    .table th {
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    .table td {
+      white-space: nowrap;
+    }
+    .table td.train-name {
+      font-weight: 600;
+      color: #222;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      min-width: 200px;
+      max-width: 260px;
+      width: 240px;
+      line-height: 1.45;
+      padding-right: 16px;
+    }
+    .train-name .code {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: #999;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+    .table td .badge {
+      white-space: nowrap;
+    }
+    .table td .action-btns {
+      white-space: nowrap;
+    }
+    .progress-mini {
+      width: 110px;
+      height: 8px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    .progress-mini span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #d32f2f, #ef5350);
+      border-radius: 4px;
+    }
+    .progress-text { font-size: 13px; color: #666; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px 28px;
+    }
+    .detail-item { font-size: 15px; line-height: 1.7; color: #555; }
+    .detail-item .label { color: #999; margin-right: 6px; min-width: 100px; display: inline-block; }
+    .detail-item .val { color: #222; font-weight: 500; }
+    .detail-section { margin-bottom: 22px; }
+    .detail-section h4 {
+      font-size: 16px;
+      color: #d32f2f;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .modal-content.wide { max-width: 960px; }
+    .page-info { text-align: center; color: #888; font-size: 14px; margin-top: 8px; }
+    .outline-list {
+      margin: 0;
+      padding-left: 20px;
+      color: #555;
+      line-height: 1.9;
+      font-size: 15px;
+    }
+    .hour-tag {
+      display: inline-block;
+      background: #fff5f5;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    @media (max-width: 992px) {
+      .train-stats { grid-template-columns: repeat(2, 1fr); }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <div class="logo">
+      <i class="fa fa-flag"></i>
+      智慧党建综合智能管理平台
+    </div>
+    <div class="nav-tabs">
+      <a href="index.html"><i class="fa fa-home"></i> 首页</a>
+      <a href="党员管理.html"><i class="fa fa-users"></i> 党员管理</a>
+      <a href="组织建设.html"><i class="fa fa-sitemap"></i> 组织建设</a>
+      <a href="学习培训.html" class="active"><i class="fa fa-book"></i> 学习培训</a>
+      <a href="活动管理.html"><i class="fa fa-calendar"></i> 活动管理</a>
+      <a href="统计分析.html"><i class="fa fa-bar-chart"></i> 统计分析</a>
+      <a href="系统设置.html"><i class="fa fa-cog"></i> 系统设置</a>
+    </div>
+    <div class="user-info">
+      <img src="https://picsum.photos/id/64/35/35" alt="用户头像">
+      <span>管理员</span>
+      <i class="fa fa-sign-out" style="cursor: pointer;" onclick="alert('退出登录')"></i>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="content">
+      <div class="content-header">
+        <h2><i class="fa fa-book"></i> 学习培训管理</h2>
+        <div class="operate-btn">
+          <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fa fa-plus"></i> 新增培训
+          </button>
+          <button class="btn btn-success" onclick="exportData('培训数据')">
+            <i class="fa fa-download"></i> 导出数据
+          </button>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <form class="search-form" onsubmit="return false;">
+          <div class="form-group">
+            <label>培训名称</label>
+            <input type="text" class="form-control" id="searchName" placeholder="请输入培训名称/编号">
+          </div>
+          <div class="form-group">
+            <label>培训类型</label>
+            <select class="form-control" id="searchType">
+              <option value="">全部</option>
+              <option>集中培训</option>
+              <option>在线学习</option>
+              <option>专题研讨</option>
+              <option>现场教学</option>
+              <option>支部党课</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>培训对象</label>
+            <select class="form-control" id="searchTarget">
+              <option value="">全部</option>
+              <option>全体党员</option>
+              <option>正式党员</option>
+              <option>预备党员</option>
+              <option>支部书记</option>
+              <option>党务干部</option>
+              <option>青年党员</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>状态</label>
+            <select class="form-control" id="searchState">
+              <option value="">全部</option>
+              <option>未开始</option>
+              <option>报名中</option>
+              <option>进行中</option>
+              <option>已完成</option>
+              <option>已取消</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 0 0 auto; min-width: auto;">
+            <label>&nbsp;</label>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-primary" onclick="handleSearch()">
+                <i class="fa fa-search"></i> 查询
+              </button>
+              <button type="button" class="btn btn-default" onclick="handleReset()">
+                <i class="fa fa-refresh"></i> 重置
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="data-table">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>序号</th>
+                <th>培训名称</th>
+                <th>培训类型</th>
+                <th>培训对象</th>
+                <th>主办单位</th>
+                <th>主讲人</th>
+                <th>学时</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>学习进度</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="trainTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <ul class="pagination" id="pagination"></ul>
+      <div class="page-info" id="pageInfo"></div>
+    </div>
+  </div>
+
+  <!-- 新增/编辑 -->
+  <div id="trainFormModal" class="modal">
+    <div class="modal-content wide">
+      <div class="modal-header">
+        <h3 id="formModalTitle">新增培训</h3>
+        <button class="close" onclick="closeModal('trainFormModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="trainForm" onsubmit="saveTrain(event)">
+          <input type="hidden" id="editId">
+          <div class="detail-section">
+            <h4>基本信息</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>培训名称 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fName" required>
+              </div>
+              <div class="form-group">
+                <label>培训编号 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fCode" placeholder="如 PX-2026-001" required>
+              </div>
+              <div class="form-group">
+                <label>培训类型 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fType" required>
+                  <option value="">请选择</option>
+                  <option>集中培训</option>
+                  <option>在线学习</option>
+                  <option>专题研讨</option>
+                  <option>现场教学</option>
+                  <option>支部党课</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>培训对象 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fTarget" required>
+                  <option value="">请选择</option>
+                  <option>全体党员</option>
+                  <option>正式党员</option>
+                  <option>预备党员</option>
+                  <option>支部书记</option>
+                  <option>党务干部</option>
+                  <option>青年党员</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>课程属性 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fAttr" required>
+                  <option>必修</option>
+                  <option>选修</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>状态 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fState" required>
+                  <option>未开始</option>
+                  <option>报名中</option>
+                  <option>进行中</option>
+                  <option>已完成</option>
+                  <option>已取消</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>组织安排</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>主办单位 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fSponsor" required>
+              </div>
+              <div class="form-group">
+                <label>承办单位</label>
+                <input type="text" class="form-control" id="fOrganizer">
+              </div>
+              <div class="form-group">
+                <label>主讲人 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fTeacher" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>培训地点</label>
+                <input type="text" class="form-control" id="fPlace" placeholder="线下地点或在线平台">
+              </div>
+              <div class="form-group">
+                <label>联系人</label>
+                <input type="text" class="form-control" id="fContact">
+              </div>
+              <div class="form-group">
+                <label>联系电话</label>
+                <input type="text" class="form-control" id="fPhone">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>开始时间 <span style="color: red;">*</span></label>
+                <input type="datetime-local" class="form-control" id="fStart" required>
+              </div>
+              <div class="form-group">
+                <label>结束时间 <span style="color: red;">*</span></label>
+                <input type="datetime-local" class="form-control" id="fEnd" required>
+              </div>
+              <div class="form-group">
+                <label>报名截止</label>
+                <input type="datetime-local" class="form-control" id="fDeadline">
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>学时考核</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>计划学时 <span style="color: red;">*</span></label>
+                <input type="number" class="form-control" id="fHours" min="0" step="0.5" required>
+              </div>
+              <div class="form-group">
+                <label>学分</label>
+                <input type="number" class="form-control" id="fCredit" min="0" step="0.5">
+              </div>
+              <div class="form-group">
+                <label>考核方式</label>
+                <select class="form-control" id="fExam">
+                  <option>签到出勤</option>
+                  <option>在线测试</option>
+                  <option>提交心得</option>
+                  <option>结业考试</option>
+                  <option>综合考评</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>计划名额</label>
+                <input type="number" class="form-control" id="fQuota" min="0">
+              </div>
+              <div class="form-group">
+                <label>已报名人数</label>
+                <input type="number" class="form-control" id="fEnrolled" min="0">
+              </div>
+              <div class="form-group">
+                <label>已完成人数</label>
+                <input type="number" class="form-control" id="fFinished" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>培训内容 <span style="color: red;">*</span></label>
+              <textarea class="form-control" id="fContent" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+              <label>课程大纲</label>
+              <textarea class="form-control" id="fOutline" rows="3" placeholder="每行一条大纲，如：第一讲 党的百年奋斗重大成就"></textarea>
+            </div>
+            <div class="form-group">
+              <label>备注</label>
+              <textarea class="form-control" id="fRemark" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-default" onclick="closeModal('trainFormModal')">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查看 -->
+  <div id="viewTrainModal" class="modal">
+    <div class="modal-content wide">
+      <div class="modal-header">
+        <h3>查看培训详情</h3>
+        <button class="close" onclick="closeModal('viewTrainModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="viewTrainBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    var trains = [
+      {
+        id: 1, name: '党史学习教育专题培训', code: 'PX-JC-2026-001', type: '集中培训',
+        target: '全体党员', attr: '必修', state: '进行中',
+        sponsor: '中共晋城市委组织部', organizer: '中共晋城市委党校',
+        teacher: '马超', place: '晋城市城区文昌街9号市委党校报告厅',
+        contact: '王美玲', phone: '0356-2051232',
+        start: '2026-03-10T09:00', end: '2026-03-14T17:00', deadline: '2026-03-05T18:00',
+        hours: 40, credit: 4, exam: '综合考评', quota: 120, enrolled: 118, finished: 86,
+        content: '围绕中国共产党百年奋斗重大成就和历史经验，结合晋城地方党史和太行精神、锡崖沟精神，开展集中辅导、分组研讨和结业测评。',
+        outline: '第一讲 党的百年奋斗重大成就与历史经验\n第二讲 太行精神与晋城红色资源\n第三讲 新时代党员党性修养\n分组研讨与结业测评',
+        remark: '参训人员需全程参加并提交学习心得'
+      },
+      {
+        id: 2, name: '学习贯彻党的二十大精神网络专题班', code: 'PX-JC-2026-002', type: '在线学习',
+        target: '全体党员', attr: '必修', state: '进行中',
+        sponsor: '中共晋城市直属机关工委', organizer: '晋城市融媒体中心',
+        teacher: '黄芳', place: '三晋先锋网络学院 / 晋城党建云课堂',
+        contact: '孙涛', phone: '0356-2051231',
+        start: '2026-02-01T00:00', end: '2026-06-30T23:59', deadline: '2026-02-15T18:00',
+        hours: 24, credit: 2.5, exam: '在线测试', quota: 300, enrolled: 268, finished: 195,
+        content: '通过网络课程系统学习党的二十大报告精神，完成规定学时与在线测试，成绩计入党员年度学习档案。',
+        outline: '专题一 大会主题与时代背景\n专题二 新时代十年的伟大变革\n专题三 中国式现代化的本质要求\n在线测试与学分认定',
+        remark: '需完成全部视频课程后方可参加测试'
+      },
+      {
+        id: 3, name: '2025年度新党员（预备党员）集中培训', code: 'PX-JC-2025-018', type: '集中培训',
+        target: '预备党员', attr: '必修', state: '已完成',
+        sponsor: '中共晋城市委组织部', organizer: '中共晋城市委党校',
+        teacher: '周雅琴、马超', place: '晋城市委党校第一教室',
+        contact: '赵晓雯', phone: '0356-2051245',
+        start: '2025-12-15T08:30', end: '2025-12-19T17:00', deadline: '2025-12-10T18:00',
+        hours: 32, credit: 3, exam: '结业考试', quota: 30, enrolled: 28, finished: 28,
+        content: '面向新发展预备党员开展入党动机教育、党章党规学习、组织生活规范培训，并进行结业考试。',
+        outline: '党章党规专题辅导\n预备党员权利义务解读\n组织生活实务演练\n结业考试与座谈交流',
+        remark: '结业成绩作为转正重要参考'
+      },
+      {
+        id: 4, name: '党支部书记履职能力提升班', code: 'PX-JC-2026-003', type: '集中培训',
+        target: '支部书记', attr: '必修', state: '报名中',
+        sponsor: '中共晋城市直属机关工委', organizer: '中共晋城市委党校',
+        teacher: '刘振华、陈志远', place: '晋城市城区凤台街188号市行政中心多功能厅',
+        contact: '王美玲', phone: '0356-2051232',
+        start: '2026-04-08T09:00', end: '2026-04-10T17:00', deadline: '2026-04-01T18:00',
+        hours: 24, credit: 2.5, exam: '提交心得', quota: 45, enrolled: 32, finished: 0,
+        content: '聚焦基层党组织书记抓党建主责主业能力，围绕换届选举、组织生活、党员教育管理、党建责任制等内容开展实操培训。',
+        outline: '支部工作条例精讲\n组织生活会与民主评议实务\n党建责任制与述职评议\n优秀书记经验分享',
+        remark: '各支部书记须本人参加，不得代培'
+      },
+      {
+        id: 5, name: '晋城红色教育现场教学（皇城相府·锡崖沟）', code: 'PX-JC-2026-004', type: '现场教学',
+        target: '青年党员', attr: '选修', state: '未开始',
+        sponsor: '青年先锋党支部', organizer: '晋城市城建集团党委、阳城县党史办',
+        teacher: '黄芳、郑丽', place: '阳城县皇城相府红色教育基地、陵川县锡崖沟精神展馆',
+        contact: '何静', phone: '13235606789',
+        start: '2026-05-16T07:30', end: '2026-05-16T18:30', deadline: '2026-05-08T18:00',
+        hours: 8, credit: 1, exam: '提交心得', quota: 40, enrolled: 18, finished: 0,
+        content: '组织青年党员赴皇城相府、锡崖沟开展现场教学，感悟艰苦奋斗精神，强化理想信念。',
+        outline: '上午 皇城相府廉政与家风教育\n下午 锡崖沟精神现场教学\n撰写现场教学心得',
+        remark: '统一乘车往返，请穿着得体并注意安全'
+      },
+      {
+        id: 6, name: '党纪学习教育专题辅导', code: 'PX-JC-2026-005', type: '专题研讨',
+        target: '全体党员', attr: '必修', state: '进行中',
+        sponsor: '中共晋城市委组织部', organizer: '机关第二党支部',
+        teacher: '马超', place: '晋城市城区泽州路66号组织部二楼会议室',
+        contact: '周雅琴', phone: '13335606543',
+        start: '2026-03-01T14:30', end: '2026-03-20T17:00', deadline: '2026-02-25T18:00',
+        hours: 12, credit: 1.5, exam: '签到出勤', quota: 80, enrolled: 76, finished: 41,
+        content: '深入学习《中国共产党纪律处分条例》，开展警示教育案例剖析和支部研讨交流。',
+        outline: '条例修订背景与主要内容\n六大纪律重点解读\n晋城本地警示教育案例\n支部研讨发言',
+        remark: '分两期滚动开班，请按通知报名'
+      },
+      {
+        id: 7, name: '党务干部业务能力专题培训', code: 'PX-JC-2026-006', type: '集中培训',
+        target: '党务干部', attr: '必修', state: '未开始',
+        sponsor: '中共晋城市直属机关工委', organizer: '晋城市政务服务中心机关第一党支部',
+        teacher: '孙涛、陈志远', place: '晋城市政务服务中心三楼党建活动室',
+        contact: '何静', phone: '0356-2051231',
+        start: '2026-04-22T09:00', end: '2026-04-23T17:00', deadline: '2026-04-15T18:00',
+        hours: 16, credit: 2, exam: '综合考评', quota: 50, enrolled: 12, finished: 0,
+        content: '面向专兼职党务干部，开展党员发展流程、党费管理、组织关系转接、党建信息系统操作等业务培训。',
+        outline: '发展党员工作细则实务\n党费收缴与管理规范\n组织关系转接办理\n智慧党建平台操作实训',
+        remark: '请自备笔记本电脑参加系统操作实训'
+      },
+      {
+        id: 8, name: '「三晋先锋」年度必修网络课程', code: 'PX-JC-2026-007', type: '在线学习',
+        target: '正式党员', attr: '必修', state: '报名中',
+        sponsor: '中共晋城市委组织部', organizer: '晋城市大数据中心',
+        teacher: '平台课程组', place: '三晋先锋·晋城学习专区',
+        contact: '赵晓雯', phone: '13635609876',
+        start: '2026-01-01T00:00', end: '2026-12-31T23:59', deadline: '2026-03-31T18:00',
+        hours: 32, credit: 3, exam: '在线测试', quota: 500, enrolled: 186, finished: 52,
+        content: '完成省委组织部规定的年度网络必修课程，学时学分纳入党员教育培训年度考核。',
+        outline: '思想政治理论必修课\n党章党规党纪专题\n基层治理与为民服务\n年度在线综合测试',
+        remark: '全年开放学习，建议每季度完成不少于8学时'
+      },
+      {
+        id: 9, name: '生产一线党员安全生产专题党课', code: 'PX-JC-2026-008', type: '支部党课',
+        target: '正式党员', attr: '选修', state: '已完成',
+        sponsor: '生产经营党总支', organizer: '生产党支部',
+        teacher: '李建国、林志鹏', place: '泽州县巴公镇建设路18号项目部会议室',
+        contact: '郑丽', phone: '0356-2186618',
+        start: '2026-01-20T15:00', end: '2026-01-20T17:00', deadline: '2026-01-18T12:00',
+        hours: 2, credit: 0.5, exam: '签到出勤', quota: 40, enrolled: 35, finished: 35,
+        content: '围绕工程建设领域安全生产责任制和党员先锋岗创建，开展专题党课和现场交流。',
+        outline: '安全生产形势与责任落实\n党员先锋岗创建经验交流\n现场提问与总结',
+        remark: '驻县流动党员同步视频参会'
+      },
+      {
+        id: 10, name: '学习习近平新时代中国特色社会主义思想主题教育读书班', code: 'PX-JC-2025-012', type: '专题研讨',
+        target: '全体党员', attr: '必修', state: '已完成',
+        sponsor: '中共晋城市直属机关工委', organizer: '中共晋城市委党校',
+        teacher: '马超、刘振华', place: '晋城市委党校报告厅',
+        contact: '王美玲', phone: '0356-2051232',
+        start: '2025-09-08T09:00', end: '2025-09-12T17:00', deadline: '2025-09-01T18:00',
+        hours: 40, credit: 4, exam: '提交心得', quota: 100, enrolled: 96, finished: 96,
+        content: '以读书班形式深入学习习近平新时代中国特色社会主义思想，开展交流研讨并形成学习成果。',
+        outline: '原著导读与专题辅导\n联组研讨交流\n成果汇报与测评\n学习总结',
+        remark: '已归档学习心得96份'
+      }
+    ];
+
+    var filtered = trains.slice();
+    var currentPage = 1;
+    var pageSize = 8;
+
+    function stateBadge(s) {
+      var map = {
+        '未开始': 'badge-info',
+        '报名中': 'badge-warning',
+        '进行中': 'badge-info',
+        '已完成': 'badge-success',
+        '已取消': 'badge-danger'
+      };
+      return '<span class="badge ' + (map[s] || 'badge-info') + '">' + s + '</span>';
+    }
+
+    function typeBadge(t) {
+      if (t === '集中培训') return '<span class="badge badge-danger">' + t + '</span>';
+      if (t === '在线学习') return '<span class="badge badge-info">' + t + '</span>';
+      if (t === '现场教学') return '<span class="badge badge-success">' + t + '</span>';
+      if (t === '专题研讨') return '<span class="badge badge-warning">' + t + '</span>';
+      return '<span class="badge badge-info">' + t + '</span>';
+    }
+
+    function fmtTime(v) {
+      if (!v) return '—';
+      return v.replace('T', ' ').slice(0, 16);
+    }
+
+    function progressHtml(t) {
+      var base = t.enrolled || 0;
+      var pct = base ? Math.min(100, Math.round((t.finished || 0) * 100 / base)) : 0;
+      return '<div class="progress-mini"><span style="width:' + pct + '%"></span></div>' +
+        '<span class="progress-text">' + (t.finished || 0) + '/' + base + '（' + pct + '%）</span>';
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent = trains.length;
+      document.getElementById('statDoing').textContent = trains.filter(function (t) { return t.state === '进行中' || t.state === '报名中'; }).length;
+      document.getElementById('statEnroll').textContent = trains.reduce(function (s, t) { return s + (t.enrolled || 0); }, 0);
+      document.getElementById('statDone').textContent = trains.filter(function (t) { return t.state === '已完成'; }).length;
+    }
+
+    function renderTable() {
+      var start = (currentPage - 1) * pageSize;
+      var pageData = filtered.slice(start, start + pageSize);
+      var tbody = document.getElementById('trainTableBody');
+
+      if (!pageData.length) {
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:#999;padding:40px;">暂无符合条件的数据</td></tr>';
+      } else {
+        tbody.innerHTML = pageData.map(function (t, i) {
+          return '<tr>' +
+            '<td>' + (start + i + 1) + '</td>' +
+            '<td class="train-name">' + t.name + '<span class="code">' + t.code + '</span></td>' +
+            '<td>' + typeBadge(t.type) + '</td>' +
+            '<td>' + t.target + '</td>' +
+            '<td>' + t.sponsor + '</td>' +
+            '<td>' + t.teacher + '</td>' +
+            '<td><span class="hour-tag">' + t.hours + '学时</span></td>' +
+            '<td>' + fmtTime(t.start) + '</td>' +
+            '<td>' + fmtTime(t.end) + '</td>' +
+            '<td>' + progressHtml(t) + '</td>' +
+            '<td>' + stateBadge(t.state) + '</td>' +
+            '<td><div class="action-btns">' +
+            '<button class="btn btn-sm btn-info" onclick="viewTrain(' + t.id + ')">查看</button>' +
+            '<button class="btn btn-sm btn-primary" onclick="openEditModal(' + t.id + ')">编辑</button>' +
+            '<button class="btn btn-sm btn-danger" onclick="deleteTrain(' + t.id + ')">删除</button>' +
+            '</div></td></tr>';
+        }).join('');
+      }
+      renderPagination();
+      updateStats();
+    }
+
+    function renderPagination() {
+      var total = filtered.length;
+      var pages = Math.max(1, Math.ceil(total / pageSize));
+      if (currentPage > pages) currentPage = pages;
+      var html = '<li class="page-item"><a class="page-link" href="#" onclick="goPage(' + (currentPage - 1) + ');return false;">上一页</a></li>';
+      for (var p = 1; p <= pages; p++) {
+        html += '<li class="page-item' + (p === currentPage ? ' active' : '') + '"><a class="page-link" href="#" onclick="goPage(' + p + ');return false;">' + p + '</a></li>';
+      }
+      html += '<li class="page-item"><a class="page-link" href="#" onclick="goPage(' + (currentPage + 1) + ');return false;">下一页</a></li>';
+      document.getElementById('pagination').innerHTML = html;
+      document.getElementById('pageInfo').textContent = '共 ' + total + ' 条记录，第 ' + currentPage + ' / ' + pages + ' 页';
+    }
+
+    function goPage(p) {
+      var pages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      if (p < 1 || p > pages) return;
+      currentPage = p;
+      renderTable();
+    }
+
+    function handleSearch() {
+      var name = document.getElementById('searchName').value.trim();
+      var type = document.getElementById('searchType').value;
+      var target = document.getElementById('searchTarget').value;
+      var state = document.getElementById('searchState').value;
+      filtered = trains.filter(function (t) {
+        if (name && t.name.indexOf(name) === -1 && t.code.indexOf(name) === -1) return false;
+        if (type && t.type !== type) return false;
+        if (target && t.target !== target) return false;
+        if (state && t.state !== state) return false;
+        return true;
+      });
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleReset() {
+      document.getElementById('searchName').value = '';
+      document.getElementById('searchType').value = '';
+      document.getElementById('searchTarget').value = '';
+      document.getElementById('searchState').value = '';
+      filtered = trains.slice();
+      currentPage = 1;
+      renderTable();
+    }
+
+    function findTrain(id) {
+      return trains.find(function (t) { return t.id === id; });
+    }
+
+    function item(label, val) {
+      return '<div class="detail-item"><span class="label">' + label + '：</span><span class="val">' + (val || '—') + '</span></div>';
+    }
+
+    function viewTrain(id) {
+      var t = findTrain(id);
+      if (!t) return;
+      var outline = (t.outline || '').split('\n').filter(Boolean).map(function (line) {
+        return '<li>' + line + '</li>';
+      }).join('');
+      var pct = t.enrolled ? Math.min(100, Math.round((t.finished || 0) * 100 / t.enrolled)) : 0;
+
+      document.getElementById('viewTrainBody').innerHTML =
+        '<div class="detail-section"><h4>基本信息</h4><div class="detail-grid">' +
+        item('培训名称', t.name) + item('培训编号', t.code) + item('培训类型', t.type) +
+        item('培训对象', t.target) + item('课程属性', t.attr) + item('状态', t.state) +
+        '</div></div>' +
+        '<div class="detail-section"><h4>组织安排</h4><div class="detail-grid">' +
+        item('主办单位', t.sponsor) + item('承办单位', t.organizer) + item('主讲人', t.teacher) +
+        item('培训地点', t.place) + item('联系人', t.contact) + item('联系电话', t.phone) +
+        item('开始时间', fmtTime(t.start)) + item('结束时间', fmtTime(t.end)) + item('报名截止', fmtTime(t.deadline)) +
+        '</div></div>' +
+        '<div class="detail-section"><h4>学时考核与进度</h4><div class="detail-grid">' +
+        item('计划学时', t.hours + ' 学时') + item('学分', t.credit) + item('考核方式', t.exam) +
+        item('计划名额', t.quota) + item('已报名', t.enrolled) + item('已完成', t.finished + '（完成率 ' + pct + '%）') +
+        '</div></div>' +
+        '<div class="detail-section"><h4>培训内容</h4><p style="color:#555;line-height:1.8;font-size:15px;margin:0;">' +
+        (t.content || '—') + '</p></div>' +
+        '<div class="detail-section"><h4>课程大纲</h4>' +
+        (outline ? '<ul class="outline-list">' + outline + '</ul>' : '<p style="color:#999;margin:0;">暂无大纲</p>') +
+        '</div>' +
+        (t.remark ? '<div class="detail-section"><h4>备注</h4><p style="color:#555;margin:0;line-height:1.8;">' + t.remark + '</p></div>' : '') +
+        '<div style="display:flex;justify-content:flex-end;gap:10px;">' +
+        '<button type="button" class="btn btn-default" onclick="closeModal(\'viewTrainModal\')">关闭</button>' +
+        '<button type="button" class="btn btn-primary" onclick="closeModal(\'viewTrainModal\');openEditModal(' + t.id + ')">编辑</button>' +
+        '</div>';
+      openModal('viewTrainModal');
+    }
+
+    function clearForm() {
+      document.getElementById('editId').value = '';
+      document.getElementById('trainForm').reset();
+      document.getElementById('fAttr').value = '必修';
+      document.getElementById('fState').value = '未开始';
+      document.getElementById('fExam').value = '签到出勤';
+    }
+
+    function fillForm(t) {
+      document.getElementById('editId').value = t.id;
+      document.getElementById('fName').value = t.name;
+      document.getElementById('fCode').value = t.code;
+      document.getElementById('fType').value = t.type;
+      document.getElementById('fTarget').value = t.target;
+      document.getElementById('fAttr').value = t.attr;
+      document.getElementById('fState').value = t.state;
+      document.getElementById('fSponsor').value = t.sponsor;
+      document.getElementById('fOrganizer').value = t.organizer || '';
+      document.getElementById('fTeacher').value = t.teacher;
+      document.getElementById('fPlace').value = t.place || '';
+      document.getElementById('fContact').value = t.contact || '';
+      document.getElementById('fPhone').value = t.phone || '';
+      document.getElementById('fStart').value = t.start;
+      document.getElementById('fEnd').value = t.end;
+      document.getElementById('fDeadline').value = t.deadline || '';
+      document.getElementById('fHours').value = t.hours;
+      document.getElementById('fCredit').value = t.credit || 0;
+      document.getElementById('fExam').value = t.exam || '签到出勤';
+      document.getElementById('fQuota').value = t.quota || 0;
+      document.getElementById('fEnrolled').value = t.enrolled || 0;
+      document.getElementById('fFinished').value = t.finished || 0;
+      document.getElementById('fContent').value = t.content || '';
+      document.getElementById('fOutline').value = t.outline || '';
+      document.getElementById('fRemark').value = t.remark || '';
+    }
+
+    function openAddModal() {
+      clearForm();
+      document.getElementById('formModalTitle').textContent = '新增培训';
+      openModal('trainFormModal');
+    }
+
+    function openEditModal(id) {
+      var t = findTrain(id);
+      if (!t) return;
+      fillForm(t);
+      document.getElementById('formModalTitle').textContent = '编辑培训信息';
+      openModal('trainFormModal');
+    }
+
+    function saveTrain(e) {
+      e.preventDefault();
+      var id = document.getElementById('editId').value;
+      var data = {
+        name: document.getElementById('fName').value.trim(),
+        code: document.getElementById('fCode').value.trim(),
+        type: document.getElementById('fType').value,
+        target: document.getElementById('fTarget').value,
+        attr: document.getElementById('fAttr').value,
+        state: document.getElementById('fState').value,
+        sponsor: document.getElementById('fSponsor').value.trim(),
+        organizer: document.getElementById('fOrganizer').value.trim(),
+        teacher: document.getElementById('fTeacher').value.trim(),
+        place: document.getElementById('fPlace').value.trim(),
+        contact: document.getElementById('fContact').value.trim(),
+        phone: document.getElementById('fPhone').value.trim(),
+        start: document.getElementById('fStart').value,
+        end: document.getElementById('fEnd').value,
+        deadline: document.getElementById('fDeadline').value,
+        hours: Number(document.getElementById('fHours').value) || 0,
+        credit: Number(document.getElementById('fCredit').value) || 0,
+        exam: document.getElementById('fExam').value,
+        quota: Number(document.getElementById('fQuota').value) || 0,
+        enrolled: Number(document.getElementById('fEnrolled').value) || 0,
+        finished: Number(document.getElementById('fFinished').value) || 0,
+        content: document.getElementById('fContent').value.trim(),
+        outline: document.getElementById('fOutline').value.trim(),
+        remark: document.getElementById('fRemark').value.trim()
+      };
+
+      if (id) {
+        var idx = trains.findIndex(function (t) { return t.id === Number(id); });
+        if (idx > -1) trains[idx] = Object.assign({}, trains[idx], data);
+        showMessage('保存成功', 'success');
+      } else {
+        data.id = trains.length ? Math.max.apply(null, trains.map(function (t) { return t.id; })) + 1 : 1;
+        trains.unshift(data);
+        showMessage('新增成功', 'success');
+      }
+      closeModal('trainFormModal');
+      handleSearch();
+    }
+
+    function deleteTrain(id) {
+      confirmDelete('确定要删除该培训计划吗？', function () {
+        trains = trains.filter(function (t) { return t.id !== id; });
+        handleSearch();
+        showMessage('删除成功', 'success');
+      });
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
