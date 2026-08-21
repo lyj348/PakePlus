@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧党建综合智能管理平台 - 系统设置</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .set-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .set-stat {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .set-stat .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 20px;
+    }
+    .set-stat .icon.red { background: linear-gradient(135deg, #d32f2f, #e57373); }
+    .set-stat .icon.blue { background: linear-gradient(135deg, #1976d2, #64b5f6); }
+    .set-stat .icon.orange { background: linear-gradient(135deg, #f57c00, #ffb74d); }
+    .set-stat .icon.green { background: linear-gradient(135deg, #388e3c, #81c784); }
+    .set-stat .num { font-size: 26px; font-weight: 700; color: #222; line-height: 1.2; }
+    .set-stat .label { font-size: 13px; color: #888; }
+    .tab-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .tab-toolbar h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #222;
+    }
+    .search-inline {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search-inline .form-control {
+      width: 180px;
+      display: inline-block;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .table-wrap::-webkit-scrollbar { display: none; }
+    .role-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      background: #fff;
+      transition: box-shadow 0.2s;
+    }
+    .role-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .role-card .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .role-card .name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #222;
+    }
+    .role-card .desc {
+      color: #888;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-top: 4px;
+    }
+    .role-meta {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: #666;
+      margin-top: 10px;
+    }
+    .perm-matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .perm-matrix th, .perm-matrix td {
+      border: 1px solid #eee;
+      padding: 12px 10px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .perm-matrix th {
+      background: #fafafa;
+      font-weight: 600;
+      color: #333;
+      white-space: nowrap;
+    }
+    .perm-matrix td:first-child,
+    .perm-matrix th:first-child {
+      text-align: left;
+      font-weight: 600;
+      min-width: 120px;
+    }
+    .perm-matrix input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    .perm-tip {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 12px;
+    }
+    .log-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      background: #f5f5f5;
+      color: #666;
+    }
+    .log-tag.login { background: #e3f2fd; color: #1565c0; }
+    .log-tag.edit { background: #fff3e0; color: #ef6c00; }
+    .log-tag.delete { background: #ffebee; color: #c62828; }
+    .log-tag.auth { background: #f3e5f5; color: #7b1fa2; }
+    .modal-content.wide { max-width: 920px; }
+    .modal-content.mid { max-width: 640px; }
+    .detail-section { margin-bottom: 18px; }
+    .detail-section h4 {
+      font-size: 15px;
+      color: #d32f2f;
+      font-weight: 700;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .page-info { text-align: center; color: #888; font-size: 14px; margin-top: 8px; }
+    @media (max-width: 992px) {
+      .set-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <div class="logo">
+      <i class="fa fa-flag"></i>
+      智慧党建综合智能管理平台
+    </div>
+    <div class="nav-tabs">
+      <a href="index.html"><i class="fa fa-home"></i> 首页</a>
+      <a href="党员管理.html"><i class="fa fa-users"></i> 党员管理</a>
+      <a href="组织建设.html"><i class="fa fa-sitemap"></i> 组织建设</a>
+      <a href="学习培训.html"><i class="fa fa-book"></i> 学习培训</a>
+      <a href="活动管理.html"><i class="fa fa-calendar"></i> 活动管理</a>
+      <a href="统计分析.html"><i class="fa fa-bar-chart"></i> 统计分析</a>
+      <a href="系统设置.html" class="active"><i class="fa fa-cog"></i> 系统设置</a>
+    </div>
+    <div class="user-info">
+      <img src="https://picsum.photos/id/64/35/35" alt="用户头像">
+      <span>管理员</span>
+      <i class="fa fa-sign-out" style="cursor: pointer;" onclick="location.href='login.html'"></i>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="content">
+      <div class="content-header">
+        <h2><i class="fa fa-cog"></i> 系统设置</h2>
+        <div style="color:#888;font-size:14px;">晋城市智慧党建综合智能管理平台 · 用户权限与运行配置</div>
+      </div>
+
+      <div class="set-stats">
+        <div class="set-stat">
+          <div class="icon red"><i class="fa fa-user"></i></div>
+          <div>
+            <div class="num" id="kpiUser">0</div>
+            <div class="label">系统用户</div>
+          </div>
+        </div>
+        <div class="set-stat">
+          <div class="icon blue"><i class="fa fa-id-badge"></i></div>
+          <div>
+            <div class="num" id="kpiRole">0</div>
+            <div class="label">角色数量</div>
+          </div>
+        </div>
+        <div class="set-stat">
+          <div class="icon orange"><i class="fa fa-check-circle"></i></div>
+          <div>
+            <div class="num" id="kpiOnline">0</div>
+            <div class="label">启用账号</div>
+          </div>
+        </div>
+        <div class="set-stat">
+          <div class="icon green"><i class="fa fa-history"></i></div>
+          <div>
+            <div class="num" id="kpiLog">0</div>
+            <div class="label">近7日操作日志</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab-nav">
+          <div class="tab-nav-item active" onclick="switchTab('basic')">基本设置</div>
+          <div class="tab-nav-item" onclick="switchTab('user')">用户管理</div>
+          <div class="tab-nav-item" onclick="switchTab('role')">角色管理</div>
+          <div class="tab-nav-item" onclick="switchTab('permission')">权限管理</div>
+          <div class="tab-nav-item" onclick="switchTab('log')">操作日志</div>
+          <div class="tab-nav-item" onclick="switchTab('backup')">数据备份</div>
+        </div>
+
+        <!-- 基本设置 -->
+        <div id="tab-basic" class="tab-content active">
+          <div class="dashboard-card">
+            <h3>系统基本信息</h3>
+            <form style="margin-top: 20px;" onsubmit="saveBasic(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>系统名称 <span style="color: red;">*</span></label>
+                  <input type="text" class="form-control" id="sysName" value="晋城市智慧党建综合智能管理平台" required>
+                </div>
+                <div class="form-group">
+                  <label>系统版本</label>
+                  <input type="text" class="form-control" value="v2.1.0" readonly>
+                </div>
+                <div class="form-group">
+                  <label>运行单位</label>
+                  <input type="text" class="form-control" id="sysUnit" value="中共晋城市直属机关工作委员会">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>联系电话</label>
+                  <input type="text" class="form-control" id="sysPhone" value="0356-2051000">
+                </div>
+                <div class="form-group">
+                  <label>邮箱</label>
+                  <input type="email" class="form-control" id="sysEmail" value="djadmin@jc.gov.cn">
+                </div>
+                <div class="form-group">
+                  <label>备案号</label>
+                  <input type="text" class="form-control" id="sysIcp" value="晋ICP备20260001号">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>系统地址</label>
+                <input type="text" class="form-control" id="sysAddr" value="山西省晋城市城区凤台街188号市行政中心">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>登录验证码</label>
+                  <select class="form-control" id="sysCaptcha">
+                    <option selected>开启</option>
+                    <option>关闭</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>密码错误锁定</label>
+                  <select class="form-control" id="sysLock">
+                    <option>连续5次锁定30分钟</option>
+                    <option selected>连续5次锁定15分钟</option>
+                    <option>不锁定</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>会话超时</label>
+                  <select class="form-control" id="sysTimeout">
+                    <option>30分钟</option>
+                    <option selected>60分钟</option>
+                    <option>120分钟</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+                <button type="button" class="btn btn-default" onclick="resetBasic()">重置</button>
+                <button type="submit" class="btn btn-primary">保存配置</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 用户管理 -->
+        <div id="tab-user" class="tab-content">
+          <div class="tab-toolbar">
+            <h3>用户管理</h3>
+            <div class="search-inline">
+              <input type="text" class="form-control" id="userKeyword" placeholder="用户名/姓名">
+              <select class="form-control" id="userRoleFilter">
+                <option value="">全部角色</option>
+              </select>
+              <select class="form-control" id="userStateFilter">
+                <option value="">全部状态</option>
+                <option>正常</option>
+                <option>停用</option>
+                <option>锁定</option>
+              </select>
+              <button class="btn btn-primary" onclick="renderUsers()"><i class="fa fa-search"></i> 查询</button>
+              <button class="btn btn-default" onclick="resetUserFilter()"><i class="fa fa-refresh"></i> 重置</button>
+              <button class="btn btn-primary" onclick="openUserModal()"><i class="fa fa-plus"></i> 新增用户</button>
+            </div>
+          </div>
+          <div class="data-table">
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>序号</th>
+                    <th>用户名</th>
+                    <th>姓名</th>
+                    <th>手机号</th>
+                    <th>角色</th>
+                    <th>所属组织</th>
+                    <th>状态</th>
+                    <th>最后登录</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="page-info" id="userPageInfo"></div>
+        </div>
+
+        <!-- 角色管理 -->
+        <div id="tab-role" class="tab-content">
+          <div class="tab-toolbar">
+            <h3>角色管理</h3>
+            <button class="btn btn-primary" onclick="openRoleModal()"><i class="fa fa-plus"></i> 新增角色</button>
+          </div>
+          <div id="roleList"></div>
+        </div>
+
+        <!-- 权限管理 -->
+        <div id="tab-permission" class="tab-content">
+          <div class="tab-toolbar">
+            <h3>权限管理</h3>
+            <div class="search-inline">
+              <label style="margin:0;color:#666;font-size:14px;">配置角色：</label>
+              <select class="form-control" id="permRoleSelect" onchange="renderPermMatrix()"></select>
+              <button class="btn btn-primary" onclick="savePermissions()"><i class="fa fa-save"></i> 保存权限</button>
+            </div>
+          </div>
+          <div class="dashboard-card">
+            <p class="perm-tip"><i class="fa fa-info-circle"></i> 勾选即授权。超级管理员默认拥有全部权限，不可取消。</p>
+            <div class="table-wrap">
+              <table class="perm-matrix" id="permMatrix"></table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作日志 -->
+        <div id="tab-log" class="tab-content">
+          <div class="tab-toolbar">
+            <h3>操作日志</h3>
+            <div class="search-inline">
+              <input type="text" class="form-control" id="logKeyword" placeholder="操作人/内容">
+              <select class="form-control" id="logTypeFilter">
+                <option value="">全部类型</option>
+                <option>登录</option>
+                <option>新增</option>
+                <option>编辑</option>
+                <option>删除</option>
+                <option>审核</option>
+                <option>导出</option>
+                <option>授权</option>
+                <option>备份</option>
+              </select>
+              <button class="btn btn-primary" onclick="renderLogs()"><i class="fa fa-search"></i> 查询</button>
+              <button class="btn btn-default" onclick="exportData('操作日志')"><i class="fa fa-download"></i> 导出</button>
+            </div>
+          </div>
+          <div class="data-table">
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>时间</th>
+                    <th>操作人</th>
+                    <th>类型</th>
+                    <th>模块</th>
+                    <th>操作内容</th>
+                    <th>IP地址</th>
+                    <th>结果</th>
+                  </tr>
+                </thead>
+                <tbody id="logTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 数据备份 -->
+        <div id="tab-backup" class="tab-content">
+          <div class="dashboard-card">
+            <h3>数据备份与恢复</h3>
+            <div style="margin-top:16px;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>备份说明</label>
+                  <input type="text" class="form-control" id="backupNote" placeholder="如：季度数据备份">
+                </div>
+                <div class="form-group">
+                  <label>备份范围</label>
+                  <select class="form-control" id="backupScope">
+                    <option>全库备份</option>
+                    <option>仅业务数据</option>
+                    <option>仅系统配置</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:10px;">
+                <button class="btn btn-primary" onclick="doBackup()"><i class="fa fa-database"></i> 立即备份</button>
+                <button class="btn btn-success" onclick="openModal('restoreModal')"><i class="fa fa-upload"></i> 恢复数据</button>
+              </div>
+              <div style="margin-top:28px;">
+                <h4 style="font-size:16px;font-weight:700;margin-bottom:12px;">备份历史记录</h4>
+                <div class="data-table">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>备份时间</th>
+                        <th>备份说明</th>
+                        <th>范围</th>
+                        <th>操作人</th>
+                        <th>文件大小</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody id="backupTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 用户表单 -->
+  <div id="userModal" class="modal">
+    <div class="modal-content mid">
+      <div class="modal-header">
+        <h3 id="userModalTitle">新增用户</h3>
+        <button class="close" onclick="closeModal('userModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="saveUser(event)">
+          <input type="hidden" id="userEditId">
+          <div class="detail-section">
+            <h4>账号信息</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>用户名 <span style="color:red;">*</span></label>
+                <input type="text" class="form-control" id="fUsername" required>
+              </div>
+              <div class="form-group">
+                <label>姓名 <span style="color:red;">*</span></label>
+                <input type="text" class="form-control" id="fRealName" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>密码 <span style="color:red;" id="pwdRequired">*</span></label>
+                <input type="password" class="form-control" id="fPassword" placeholder="编辑时可留空">
+              </div>
+              <div class="form-group">
+                <label>确认密码</label>
+                <input type="password" class="form-control" id="fPassword2" placeholder="再次输入密码">
+              </div>
+            </div>
+          </div>
+          <div class="detail-section">
+            <h4>岗位与权限</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>手机号</label>
+                <input type="text" class="form-control" id="fPhone" maxlength="11">
+              </div>
+              <div class="form-group">
+                <label>角色 <span style="color:red;">*</span></label>
+                <select class="form-control" id="fRole" required></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>所属组织</label>
+                <select class="form-control" id="fOrg">
+                  <option value="">无 / 市级机关</option>
+                  <option>机关第一党支部</option>
+                  <option>机关第二党支部</option>
+                  <option>生产党支部</option>
+                  <option>青年先锋党支部</option>
+                  <option>离退休党支部</option>
+                  <option>生产经营党总支</option>
+                  <option>陵川项目临时党支部</option>
+                  <option>党校教职工党支部</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>状态 <span style="color:red;">*</span></label>
+                <select class="form-control" id="fState" required>
+                  <option>正常</option>
+                  <option>停用</option>
+                  <option>锁定</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;">
+            <button type="button" class="btn btn-default" onclick="closeModal('userModal')">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 角色表单 -->
+  <div id="roleModal" class="modal">
+    <div class="modal-content mid">
+      <div class="modal-header">
+        <h3 id="roleModalTitle">新增角色</h3>
+        <button class="close" onclick="closeModal('roleModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="saveRole(event)">
+          <input type="hidden" id="roleEditId">
+          <div class="form-row">
+            <div class="form-group">
+              <label>角色名称 <span style="color:red;">*</span></label>
+              <input type="text" class="form-control" id="fRoleName" required>
+            </div>
+            <div class="form-group">
+              <label>角色编码 <span style="color:red;">*</span></label>
+              <input type="text" class="form-control" id="fRoleCode" placeholder="如 BRANCH_SECRETARY" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>数据范围</label>
+              <select class="form-control" id="fRoleScope">
+                <option>全市</option>
+                <option>本单位及下级</option>
+                <option>仅本支部</option>
+                <option>仅本人</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>状态</label>
+              <select class="form-control" id="fRoleState">
+                <option>启用</option>
+                <option>停用</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>角色说明</label>
+            <textarea class="form-control" id="fRoleDesc" rows="3"></textarea>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+            <button type="button" class="btn btn-default" onclick="closeModal('roleModal')">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 恢复数据 -->
+  <div id="restoreModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>恢复数据</h3>
+        <button class="close" onclick="closeModal('restoreModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>选择备份文件</label>
+          <input type="file" class="form-control" accept=".bak,.zip,.sql">
+        </div>
+        <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:12px;color:#8d6e63;font-size:14px;line-height:1.6;">
+          恢复将覆盖当前业务数据，建议先执行一次全库备份。演示环境不会真实写入。
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+          <button class="btn btn-default" onclick="closeModal('restoreModal')">取消</button>
+          <button class="btn btn-primary" onclick="showMessage('数据恢复任务已提交', 'success'); closeModal('restoreModal')">开始恢复</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    var modules = ['首页', '党员管理', '组织建设', '学习培训', '活动管理', '统计分析', '系统设置'];
+    var actions = ['查看', '新增', '编辑', '删除', '审核', '导出'];
+
+    var roles = [
+      { id: 1, name: '超级管理员', code: 'SUPER_ADMIN', scope: '全市', state: '启用', users: 1, desc: '拥有系统全部功能与数据权限，负责平台运维与权限配置。', builtin: true },
+      { id: 2, name: '机关工委管理员', code: 'WORK_ADMIN', scope: '本单位及下级', state: '启用', users: 2, desc: '负责市直属机关党建业务统筹，可审核下级支部活动、培训与组织信息。', builtin: false },
+      { id: 3, name: '支部书记', code: 'BRANCH_SECRETARY', scope: '仅本支部', state: '启用', users: 4, desc: '管理本支部党员、组织生活、学习培训，可发起活动并查看本支部统计。', builtin: false },
+      { id: 4, name: '党务干部', code: 'PARTY_STAFF', scope: '仅本支部', state: '启用', users: 3, desc: '协助支部书记办理党务，维护党员与活动信息，无系统管理权限。', builtin: false },
+      { id: 5, name: '普通党员', code: 'PARTY_MEMBER', scope: '仅本人', state: '启用', users: 2, desc: '可查看本人相关学习培训与组织生活安排，无后台管理权限。', builtin: false }
+    ];
+
+    // 权限矩阵：roleId -> module -> actions[]
+    var permissions = {
+      1: fullPerm(),
+      2: {
+        '首页': ['查看'],
+        '党员管理': ['查看', '新增', '编辑', '删除', '导出'],
+        '组织建设': ['查看', '新增', '编辑', '审核', '导出'],
+        '学习培训': ['查看', '新增', '编辑', '审核', '导出'],
+        '活动管理': ['查看', '新增', '编辑', '审核', '导出'],
+        '统计分析': ['查看', '导出'],
+        '系统设置': ['查看']
+      },
+      3: {
+        '首页': ['查看'],
+        '党员管理': ['查看', '新增', '编辑', '导出'],
+        '组织建设': ['查看', '编辑'],
+        '学习培训': ['查看', '新增', '编辑'],
+        '活动管理': ['查看', '新增', '编辑', '审核'],
+        '统计分析': ['查看'],
+        '系统设置': []
+      },
+      4: {
+        '首页': ['查看'],
+        '党员管理': ['查看', '编辑'],
+        '组织建设': ['查看'],
+        '学习培训': ['查看', '新增', '编辑'],
+        '活动管理': ['查看', '新增', '编辑'],
+        '统计分析': ['查看'],
+        '系统设置': []
+      },
+      5: {
+        '首页': ['查看'],
+        '党员管理': ['查看'],
+        '组织建设': ['查看'],
+        '学习培训': ['查看'],
+        '活动管理': ['查看'],
+        '统计分析': [],
+        '系统设置': []
+      }
+    };
+
+    var users = [
+      { id: 1, username: 'admin', name: '刘振华', phone: '13835600001', roleId: 1, org: '中共晋城市直属机关工委', state: '正常', lastLogin: '2026-03-18 09:12' },
+      { id: 2, username: 'wangml', name: '王美玲', phone: '13935605678', roleId: 2, org: '机关第二党支部', state: '正常', lastLogin: '2026-03-18 08:40' },
+      { id: 3, username: 'chenzy', name: '陈志远', phone: '13835601234', roleId: 3, org: '机关第一党支部', state: '正常', lastLogin: '2026-03-17 16:22' },
+      { id: 4, username: 'zhouyq', name: '周雅琴', phone: '13335606543', roleId: 3, org: '机关第二党支部', state: '正常', lastLogin: '2026-03-17 11:05' },
+      { id: 5, username: 'lijg', name: '李建国', phone: '13735607890', roleId: 3, org: '生产党支部', state: '正常', lastLogin: '2026-03-16 19:30' },
+      { id: 6, username: 'huangf', name: '黄芳', phone: '15935604567', roleId: 3, org: '青年先锋党支部', state: '正常', lastLogin: '2026-03-15 14:18' },
+      { id: 7, username: 'suntao', name: '孙涛', phone: '13535604321', roleId: 4, org: '机关第一党支部', state: '正常', lastLogin: '2026-03-18 10:01' },
+      { id: 8, username: 'zhengli', name: '郑丽', phone: '15835602345', roleId: 4, org: '生产党支部', state: '正常', lastLogin: '2026-03-14 09:55' },
+      { id: 9, username: 'hejing', name: '何静', phone: '13235606789', roleId: 4, org: '机关第一党支部', state: '停用', lastLogin: '2026-02-28 17:40' },
+      { id: 10, username: 'zhaoxw', name: '赵晓雯', phone: '13635609876', roleId: 5, org: '青年先锋党支部', state: '正常', lastLogin: '2026-03-17 20:12' },
+      { id: 11, username: 'wuqiang', name: '吴强', phone: '13135608765', roleId: 5, org: '离退休党支部', state: '锁定', lastLogin: '2026-01-20 08:33' },
+      { id: 12, username: 'machao', name: '马超', phone: '18635603456', roleId: 2, org: '党校教职工党支部', state: '正常', lastLogin: '2026-03-18 07:58' }
+    ];
+
+    var logs = [
+      { time: '2026-03-18 10:01:22', user: '孙涛', type: '编辑', module: '党员管理', content: '更新党员「何静」联系方式', ip: '10.56.12.18', result: '成功' },
+      { time: '2026-03-18 09:12:08', user: '刘振华', type: '登录', module: '系统登录', content: '管理员登录系统', ip: '10.56.1.8', result: '成功' },
+      { time: '2026-03-18 08:45:31', user: '王美玲', type: '审核', module: '活动管理', content: '审核通过「一季度支部党员大会」', ip: '10.56.8.22', result: '成功' },
+      { time: '2026-03-17 16:40:05', user: '陈志远', type: '新增', module: '活动管理', content: '新增主题党日「学思践悟」三月主题党日', ip: '10.56.12.5', result: '成功' },
+      { time: '2026-03-17 15:12:44', user: '马超', type: '授权', module: '系统设置', content: '调整角色「党务干部」权限配置', ip: '10.56.20.3', result: '成功' },
+      { time: '2026-03-17 11:20:18', user: '周雅琴', type: '导出', module: '统计分析', content: '导出本支部综合统计报表', ip: '10.56.8.31', result: '成功' },
+      { time: '2026-03-16 19:35:02', user: '李建国', type: '编辑', module: '学习培训', content: '编辑培训「锡崖沟精神专题党课」总结', ip: '10.56.30.16', result: '成功' },
+      { time: '2026-03-16 09:08:55', user: '黄芳', type: '新增', module: '学习培训', content: '新增现场教学计划「皇城相府·锡崖沟」', ip: '10.56.15.9', result: '成功' },
+      { time: '2026-03-15 14:22:10', user: '郑丽', type: '删除', module: '活动管理', content: '删除草稿活动「临时学习安排」', ip: '10.56.30.21', result: '成功' },
+      { time: '2026-03-14 10:30:00', user: '系统', type: '备份', module: '数据备份', content: '系统自动全库备份', ip: '127.0.0.1', result: '成功' },
+      { time: '2026-03-13 18:01:33', user: '吴强', type: '登录', module: '系统登录', content: '密码错误次数过多，账号锁定', ip: '10.56.40.7', result: '失败' },
+      { time: '2026-03-12 16:08:19', user: '赵晓雯', type: '登录', module: '系统登录', content: '党员账号登录查看培训任务', ip: '10.56.15.44', result: '成功' }
+    ];
+
+    var backups = [
+      { time: '2026-03-14 10:30:00', note: '系统自动备份', scope: '全库备份', user: '系统', size: '186.2 MB' },
+      { time: '2026-03-07 10:30:00', note: '系统自动备份', scope: '全库备份', user: '系统', size: '182.5 MB' },
+      { time: '2026-02-28 17:20:00', note: '一季度前手工备份', scope: '全库备份', user: '刘振华', size: '179.8 MB' },
+      { time: '2026-02-20 11:05:00', note: '权限调整前备份', scope: '仅系统配置', user: '马超', size: '12.4 MB' }
+    ];
+
+    function fullPerm() {
+      var map = {};
+      modules.forEach(function (m) { map[m] = actions.slice(); });
+      return map;
+    }
+
+    function roleName(id) {
+      var r = roles.find(function (x) { return x.id === id; });
+      return r ? r.name : '—';
+    }
+
+    function roleBadge(id) {
+      var name = roleName(id);
+      if (id === 1) return '<span class="badge badge-danger">' + name + '</span>';
+      if (id === 2) return '<span class="badge badge-warning">' + name + '</span>';
+      if (id === 3) return '<span class="badge badge-info">' + name + '</span>';
+      if (id === 5) return '<span class="badge badge-success">' + name + '</span>';
+      return '<span class="badge badge-info">' + name + '</span>';
+    }
+
+    function stateBadge(s) {
+      if (s === '正常' || s === '启用') return '<span class="badge badge-success">' + s + '</span>';
+      if (s === '停用') return '<span class="badge badge-warning">' + s + '</span>';
+      return '<span class="badge badge-danger">' + s + '</span>';
+    }
+
+    function updateKpi() {
+      document.getElementById('kpiUser').textContent = users.length;
+      document.getElementById('kpiRole').textContent = roles.length;
+      document.getElementById('kpiOnline').textContent = users.filter(function (u) { return u.state === '正常'; }).length;
+      document.getElementById('kpiLog').textContent = logs.length;
+      // sync role user counts
+      roles.forEach(function (r) {
+        r.users = users.filter(function (u) { return u.roleId === r.id; }).length;
+      });
+    }
+
+    function fillRoleSelects() {
+      var opts = roles.map(function (r) {
+        return '<option value="' + r.id + '">' + r.name + '</option>';
+      }).join('');
+      document.getElementById('userRoleFilter').innerHTML = '<option value="">全部角色</option>' + opts;
+      document.getElementById('fRole').innerHTML = opts;
+      document.getElementById('permRoleSelect').innerHTML = opts;
+    }
+
+    function renderUsers() {
+      var kw = (document.getElementById('userKeyword').value || '').trim();
+      var role = document.getElementById('userRoleFilter').value;
+      var state = document.getElementById('userStateFilter').value;
+      var list = users.filter(function (u) {
+        if (kw && u.username.indexOf(kw) === -1 && u.name.indexOf(kw) === -1) return false;
+        if (role && String(u.roleId) !== role) return false;
+        if (state && u.state !== state) return false;
+        return true;
+      });
+      document.getElementById('userTableBody').innerHTML = list.map(function (u, i) {
+        return '<tr>' +
+          '<td>' + (i + 1) + '</td>' +
+          '<td>' + u.username + '</td>' +
+          '<td><strong>' + u.name + '</strong></td>' +
+          '<td>' + (u.phone || '—') + '</td>' +
+          '<td>' + roleBadge(u.roleId) + '</td>' +
+          '<td>' + (u.org || '—') + '</td>' +
+          '<td>' + stateBadge(u.state) + '</td>' +
+          '<td>' + (u.lastLogin || '—') + '</td>' +
+          '<td><div class="action-btns">' +
+          '<button class="btn btn-sm btn-primary" onclick="openUserModal(' + u.id + ')">编辑</button>' +
+          (u.state === '正常'
+            ? '<button class="btn btn-sm btn-default" onclick="toggleUser(' + u.id + ',\'停用\')">停用</button>'
+            : '<button class="btn btn-sm btn-success" onclick="toggleUser(' + u.id + ',\'正常\')">启用</button>') +
+          '<button class="btn btn-sm btn-danger" onclick="deleteUser(' + u.id + ')">删除</button>' +
+          '</div></td></tr>';
+      }).join('') || '<tr><td colspan="9" style="text-align:center;color:#999;padding:30px;">暂无数据</td></tr>';
+      document.getElementById('userPageInfo').textContent = '共 ' + list.length + ' 个用户';
+      updateKpi();
+    }
+
+    function resetUserFilter() {
+      document.getElementById('userKeyword').value = '';
+      document.getElementById('userRoleFilter').value = '';
+      document.getElementById('userStateFilter').value = '';
+      renderUsers();
+    }
+
+    function openUserModal(id) {
+      fillRoleSelects();
+      document.getElementById('userEditId').value = id || '';
+      if (id) {
+        var u = users.find(function (x) { return x.id === id; });
+        if (!u) return;
+        document.getElementById('userModalTitle').textContent = '编辑用户';
+        document.getElementById('fUsername').value = u.username;
+        document.getElementById('fUsername').readOnly = true;
+        document.getElementById('fRealName').value = u.name;
+        document.getElementById('fPassword').value = '';
+        document.getElementById('fPassword2').value = '';
+        document.getElementById('fPassword').required = false;
+        document.getElementById('pwdRequired').style.display = 'none';
+        document.getElementById('fPhone').value = u.phone || '';
+        document.getElementById('fRole').value = u.roleId;
+        document.getElementById('fOrg').value = u.org || '';
+        document.getElementById('fState').value = u.state;
+      } else {
+        document.getElementById('userModalTitle').textContent = '新增用户';
+        document.getElementById('fUsername').value = '';
+        document.getElementById('fUsername').readOnly = false;
+        document.getElementById('fRealName').value = '';
+        document.getElementById('fPassword').value = '';
+        document.getElementById('fPassword2').value = '';
+        document.getElementById('fPassword').required = true;
+        document.getElementById('pwdRequired').style.display = 'inline';
+        document.getElementById('fPhone').value = '';
+        document.getElementById('fRole').value = roles[3] ? roles[3].id : roles[0].id;
+        document.getElementById('fOrg').value = '';
+        document.getElementById('fState').value = '正常';
+      }
+      openModal('userModal');
+    }
+
+    function saveUser(e) {
+      e.preventDefault();
+      var id = document.getElementById('userEditId').value;
+      var pwd = document.getElementById('fPassword').value;
+      var pwd2 = document.getElementById('fPassword2').value;
+      if ((!id && !pwd) || (pwd && pwd !== pwd2)) {
+        showMessage('请确认密码填写一致', 'warning');
+        return;
+      }
+      var data = {
+        username: document.getElementById('fUsername').value.trim(),
+        name: document.getElementById('fRealName').value.trim(),
+        phone: document.getElementById('fPhone').value.trim(),
+        roleId: Number(document.getElementById('fRole').value),
+        org: document.getElementById('fOrg').value,
+        state: document.getElementById('fState').value
+      };
+      if (id) {
+        var idx = users.findIndex(function (u) { return u.id === Number(id); });
+        if (idx > -1) users[idx] = Object.assign({}, users[idx], data);
+        showMessage('用户保存成功', 'success');
+        addLog(data.name, '编辑', '系统设置', '编辑用户「' + data.username + '」');
+      } else {
+        if (users.some(function (u) { return u.username === data.username; })) {
+          showMessage('用户名已存在', 'warning');
+          return;
+        }
+        data.id = Math.max.apply(null, users.map(function (u) { return u.id; })) + 1;
+        data.lastLogin = '—';
+        users.unshift(data);
+        showMessage('用户新增成功', 'success');
+        addLog(data.name, '新增', '系统设置', '新增用户「' + data.username + '」');
+      }
+      closeModal('userModal');
+      renderUsers();
+      renderRoles();
+    }
+
+    function toggleUser(id, state) {
+      var u = users.find(function (x) { return x.id === id; });
+      if (!u) return;
+      if (u.username === 'admin') {
+        showMessage('不能停用超级管理员账号', 'warning');
+        return;
+      }
+      u.state = state;
+      showMessage(state === '正常' ? '已启用账号' : '已停用账号', 'success');
+      addLog('管理员', '编辑', '系统设置', (state === '正常' ? '启用' : '停用') + '用户「' + u.username + '」');
+      renderUsers();
+    }
+
+    function deleteUser(id) {
+      var u = users.find(function (x) { return x.id === id; });
+      if (!u) return;
+      if (u.username === 'admin') {
+        showMessage('不能删除超级管理员账号', 'warning');
+        return;
+      }
+      confirmDelete('确定删除用户「' + u.name + '」吗？', function () {
+        users = users.filter(function (x) { return x.id !== id; });
+        showMessage('删除成功', 'success');
+        addLog('管理员', '删除', '系统设置', '删除用户「' + u.username + '」');
+        renderUsers();
+        renderRoles();
+      });
+    }
+
+    function renderRoles() {
+      updateKpi();
+      document.getElementById('roleList').innerHTML = roles.map(function (r) {
+        return '<div class="role-card">' +
+          '<div class="top">' +
+            '<div><div class="name">' + r.name + ' ' + stateBadge(r.state) +
+            (r.builtin ? ' <span class="badge badge-danger">内置</span>' : '') +
+            '</div><div class="desc">' + r.desc + '</div></div>' +
+            '<div class="action-btns">' +
+              '<button class="btn btn-sm btn-info" onclick="focusPerm(' + r.id + ')">配置权限</button>' +
+              '<button class="btn btn-sm btn-primary" onclick="openRoleModal(' + r.id + ')">编辑</button>' +
+              (!r.builtin ? '<button class="btn btn-sm btn-danger" onclick="deleteRole(' + r.id + ')">删除</button>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="role-meta">' +
+            '<span><i class="fa fa-code"></i> 编码：' + r.code + '</span>' +
+            '<span><i class="fa fa-sitemap"></i> 数据范围：' + r.scope + '</span>' +
+            '<span><i class="fa fa-users"></i> 关联用户：' + r.users + ' 人</span>' +
+          '</div></div>';
+      }).join('');
+    }
+
+    function openRoleModal(id) {
+      document.getElementById('roleEditId').value = id || '';
+      if (id) {
+        var r = roles.find(function (x) { return x.id === id; });
+        if (!r) return;
+        document.getElementById('roleModalTitle').textContent = '编辑角色';
+        document.getElementById('fRoleName').value = r.name;
+        document.getElementById('fRoleCode').value = r.code;
+        document.getElementById('fRoleCode').readOnly = !!r.builtin;
+        document.getElementById('fRoleScope').value = r.scope;
+        document.getElementById('fRoleState').value = r.state;
+        document.getElementById('fRoleDesc').value = r.desc;
+      } else {
+        document.getElementById('roleModalTitle').textContent = '新增角色';
+        document.getElementById('fRoleName').value = '';
+        document.getElementById('fRoleCode').value = '';
+        document.getElementById('fRoleCode').readOnly = false;
+        document.getElementById('fRoleScope').value = '仅本支部';
+        document.getElementById('fRoleState').value = '启用';
+        document.getElementById('fRoleDesc').value = '';
+      }
+      openModal('roleModal');
+    }
+
+    function saveRole(e) {
+      e.preventDefault();
+      var id = document.getElementById('roleEditId').value;
+      var data = {
+        name: document.getElementById('fRoleName').value.trim(),
+        code: document.getElementById('fRoleCode').value.trim(),
+        scope: document.getElementById('fRoleScope').value,
+        state: document.getElementById('fRoleState').value,
+        desc: document.getElementById('fRoleDesc').value.trim()
+      };
+      if (id) {
+        var idx = roles.findIndex(function (r) { return r.id === Number(id); });
+        if (idx > -1) {
+          roles[idx] = Object.assign({}, roles[idx], data);
+        }
+        showMessage('角色保存成功', 'success');
+        addLog('管理员', '编辑', '系统设置', '编辑角色「' + data.name + '」');
+      } else {
+        var newId = Math.max.apply(null, roles.map(function (r) { return r.id; })) + 1;
+        data.id = newId;
+        data.users = 0;
+        data.builtin = false;
+        roles.push(data);
+        permissions[newId] = {
+          '首页': ['查看'],
+          '党员管理': ['查看'],
+          '组织建设': ['查看'],
+          '学习培训': ['查看'],
+          '活动管理': ['查看'],
+          '统计分析': [],
+          '系统设置': []
+        };
+        showMessage('角色新增成功', 'success');
+        addLog('管理员', '新增', '系统设置', '新增角色「' + data.name + '」');
+      }
+      closeModal('roleModal');
+      fillRoleSelects();
+      renderRoles();
+      renderPermMatrix();
+      renderUsers();
+    }
+
+    function deleteRole(id) {
+      var r = roles.find(function (x) { return x.id === id; });
+      if (!r || r.builtin) return;
+      if (users.some(function (u) { return u.roleId === id; })) {
+        showMessage('该角色下仍有用户，无法删除', 'warning');
+        return;
+      }
+      confirmDelete('确定删除角色「' + r.name + '」吗？', function () {
+        roles = roles.filter(function (x) { return x.id !== id; });
+        delete permissions[id];
+        showMessage('角色已删除', 'success');
+        addLog('管理员', '删除', '系统设置', '删除角色「' + r.name + '」');
+        fillRoleSelects();
+        renderRoles();
+        renderPermMatrix();
+      });
+    }
+
+    function focusPerm(roleId) {
+      document.querySelectorAll('.tab-nav-item').forEach(function (el) { el.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function (el) { el.classList.remove('active'); });
+      var items = document.querySelectorAll('.tab-nav-item');
+      items[3].classList.add('active');
+      document.getElementById('tab-permission').classList.add('active');
+      document.getElementById('permRoleSelect').value = roleId;
+      renderPermMatrix();
+    }
+
+    function renderPermMatrix() {
+      var roleId = Number(document.getElementById('permRoleSelect').value || 1);
+      var perm = permissions[roleId] || {};
+      var isSuper = roleId === 1;
+      var html = '<thead><tr><th>功能模块</th>';
+      actions.forEach(function (a) { html += '<th>' + a + '</th>'; });
+      html += '<th>全选</th></tr></thead><tbody>';
+      modules.forEach(function (m, mi) {
+        html += '<tr><td>' + m + '</td>';
+        actions.forEach(function (a, ai) {
+          var checked = (perm[m] || []).indexOf(a) > -1;
+          html += '<td><input type="checkbox" data-m="' + mi + '" data-a="' + ai + '"' +
+            (checked ? ' checked' : '') + (isSuper ? ' disabled' : '') + '></td>';
+        });
+        html += '<td><input type="checkbox" onclick="toggleRow(this,' + mi + ')"' + (isSuper ? ' disabled checked' : '') + '></td></tr>';
+      });
+      html += '</tbody>';
+      document.getElementById('permMatrix').innerHTML = html;
+    }
+
+    function toggleRow(el, mi) {
+      var row = el.closest('tr');
+      row.querySelectorAll('input[type=checkbox][data-m]').forEach(function (cb) {
+        cb.checked = el.checked;
+      });
+    }
+
+    function savePermissions() {
+      var roleId = Number(document.getElementById('permRoleSelect').value);
+      if (roleId === 1) {
+        showMessage('超级管理员权限不可修改', 'warning');
+        return;
+      }
+      var map = {};
+      modules.forEach(function (m) { map[m] = []; });
+      document.querySelectorAll('#permMatrix input[data-m]').forEach(function (cb) {
+        if (cb.checked) {
+          var m = modules[Number(cb.getAttribute('data-m'))];
+          var a = actions[Number(cb.getAttribute('data-a'))];
+          map[m].push(a);
+        }
+      });
+      permissions[roleId] = map;
+      showMessage('权限配置已保存', 'success');
+      addLog('管理员', '授权', '系统设置', '更新角色「' + roleName(roleId) + '」权限');
+      renderLogs();
+    }
+
+    function logTag(type) {
+      var cls = 'log-tag';
+      if (type === '登录') cls += ' login';
+      else if (type === '编辑' || type === '新增' || type === '导出' || type === '审核') cls += ' edit';
+      else if (type === '删除') cls += ' delete';
+      else if (type === '授权' || type === '备份') cls += ' auth';
+      return '<span class="' + cls + '">' + type + '</span>';
+    }
+
+    function renderLogs() {
+      var kw = (document.getElementById('logKeyword').value || '').trim();
+      var type = document.getElementById('logTypeFilter').value;
+      var list = logs.filter(function (l) {
+        if (kw && l.user.indexOf(kw) === -1 && l.content.indexOf(kw) === -1) return false;
+        if (type && l.type !== type) return false;
+        return true;
+      });
+      document.getElementById('logTableBody').innerHTML = list.map(function (l) {
+        return '<tr>' +
+          '<td>' + l.time + '</td>' +
+          '<td>' + l.user + '</td>' +
+          '<td>' + logTag(l.type) + '</td>' +
+          '<td>' + l.module + '</td>' +
+          '<td style="white-space:normal;max-width:360px;">' + l.content + '</td>' +
+          '<td>' + l.ip + '</td>' +
+          '<td>' + (l.result === '成功' ? '<span class="badge badge-success">成功</span>' : '<span class="badge badge-danger">失败</span>') + '</td>' +
+          '</tr>';
+      }).join('') || '<tr><td colspan="7" style="text-align:center;color:#999;padding:30px;">暂无日志</td></tr>';
+    }
+
+    function addLog(user, type, module, content) {
+      var now = new Date();
+      var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+      var time = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + ' ' +
+        pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+      logs.unshift({ time: time, user: user || '管理员', type: type, module: module, content: content, ip: '10.56.1.8', result: '成功' });
+      updateKpi();
+    }
+
+    function renderBackups() {
+      document.getElementById('backupTableBody').innerHTML = backups.map(function (b, i) {
+        return '<tr>' +
+          '<td>' + b.time + '</td>' +
+          '<td>' + b.note + '</td>' +
+          '<td>' + b.scope + '</td>' +
+          '<td>' + b.user + '</td>' +
+          '<td>' + b.size + '</td>' +
+          '<td><div class="action-btns">' +
+          '<button class="btn btn-sm btn-success" onclick="showMessage(\'开始下载备份文件...\',\'info\')">下载</button>' +
+          '<button class="btn btn-sm btn-primary" onclick="showMessage(\'已选择该备份用于恢复演示\',\'success\')">恢复</button>' +
+          '</div></td></tr>';
+      }).join('');
+    }
+
+    function doBackup() {
+      var note = document.getElementById('backupNote').value.trim() || '手工备份';
+      var scope = document.getElementById('backupScope').value;
+      var now = new Date();
+      var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+      var time = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + ' ' +
+        pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+      backups.unshift({ time: time, note: note, scope: scope, user: '刘振华', size: (170 + Math.random() * 20).toFixed(1) + ' MB' });
+      document.getElementById('backupNote').value = '';
+      showMessage('备份任务已完成', 'success');
+      addLog('刘振华', '备份', '数据备份', note + '（' + scope + '）');
+      renderBackups();
+      renderLogs();
+    }
+
+    function saveBasic(e) {
+      e.preventDefault();
+      showMessage('系统配置已保存', 'success');
+      addLog('管理员', '编辑', '系统设置', '更新系统基本配置');
+      renderLogs();
+    }
+
+    function resetBasic() {
+      document.getElementById('sysName').value = '晋城市智慧党建综合智能管理平台';
+      document.getElementById('sysUnit').value = '中共晋城市直属机关工作委员会';
+      document.getElementById('sysPhone').value = '0356-2051000';
+      document.getElementById('sysEmail').value = 'djadmin@jc.gov.cn';
+      document.getElementById('sysIcp').value = '晋ICP备20260001号';
+      document.getElementById('sysAddr').value = '山西省晋城市城区凤台街188号市行政中心';
+      showMessage('已恢复默认配置', 'info');
+    }
+
+    // 修复 common.js switchTab 对当前页的依赖
+    window.switchTab = function (tabName) {
+      document.querySelectorAll('.tab-nav-item').forEach(function (item) { item.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function (content) { content.classList.remove('active'); });
+      if (typeof event !== 'undefined' && event && event.target) {
+        event.target.classList.add('active');
+      }
+      var map = { basic: 0, user: 1, role: 2, permission: 3, log: 4, backup: 5 };
+      var items = document.querySelectorAll('.tab-nav-item');
+      if (map[tabName] != null && items[map[tabName]]) items[map[tabName]].classList.add('active');
+      var panel = document.getElementById('tab-' + tabName);
+      if (panel) panel.classList.add('active');
+      if (tabName === 'user') renderUsers();
+      if (tabName === 'role') renderRoles();
+      if (tabName === 'permission') renderPermMatrix();
+      if (tabName === 'log') renderLogs();
+      if (tabName === 'backup') renderBackups();
+    };
+
+    fillRoleSelects();
+    updateKpi();
+    renderUsers();
+    renderRoles();
+    renderPermMatrix();
+    renderLogs();
+    renderBackups();
+  </script>
+</body>
+</html>
