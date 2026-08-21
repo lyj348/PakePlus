@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧党建综合智能管理平台 - 活动管理</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .act-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .act-stat {
+      background: #fff;
+      border-radius: 8px;
+      padding: 18px 22px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .act-stat .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .act-stat .icon.red { background: linear-gradient(135deg, #d32f2f, #e57373); }
+    .act-stat .icon.blue { background: linear-gradient(135deg, #1976d2, #64b5f6); }
+    .act-stat .icon.orange { background: linear-gradient(135deg, #f57c00, #ffb74d); }
+    .act-stat .icon.green { background: linear-gradient(135deg, #388e3c, #81c784); }
+    .act-stat .num { font-size: 28px; font-weight: 700; color: #222; line-height: 1.2; }
+    .act-stat .label { font-size: 14px; color: #888; margin-top: 2px; }
+    .table-wrap {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .table-wrap::-webkit-scrollbar { display: none; height: 0; }
+    .table { width: 100%; min-width: 1280px; table-layout: auto; }
+    .table th, .table td { vertical-align: middle; }
+    .table th { white-space: nowrap; }
+    .table td { white-space: nowrap; }
+    .table td.act-name {
+      font-weight: 600;
+      color: #222;
+      white-space: normal;
+      word-break: break-word;
+      min-width: 200px;
+      max-width: 260px;
+      width: 240px;
+      line-height: 1.45;
+      padding-right: 16px;
+    }
+    .act-name .code {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: #999;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+    .rate-ok { color: #2e7d32; font-weight: 600; }
+    .rate-warn { color: #ef6c00; font-weight: 600; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px 28px;
+    }
+    .detail-item { font-size: 15px; line-height: 1.7; color: #555; }
+    .detail-item .label { color: #999; margin-right: 6px; min-width: 100px; display: inline-block; }
+    .detail-item .val { color: #222; font-weight: 500; }
+    .detail-section { margin-bottom: 22px; }
+    .detail-section h4 {
+      font-size: 16px;
+      color: #d32f2f;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .modal-content.wide { max-width: 960px; }
+    .page-info { text-align: center; color: #888; font-size: 14px; margin-top: 8px; }
+    .agenda-list {
+      margin: 0;
+      padding-left: 20px;
+      color: #555;
+      line-height: 1.9;
+      font-size: 15px;
+    }
+    .summary-box {
+      background: #fafafa;
+      border: 1px solid #f0f0f0;
+      border-radius: 6px;
+      padding: 14px 16px;
+      color: #555;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+    @media (max-width: 992px) {
+      .act-stats { grid-template-columns: repeat(2, 1fr); }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <div class="logo">
+      <i class="fa fa-flag"></i>
+      智慧党建综合智能管理平台
+    </div>
+    <div class="nav-tabs">
+      <a href="index.html"><i class="fa fa-home"></i> 首页</a>
+      <a href="党员管理.html"><i class="fa fa-users"></i> 党员管理</a>
+      <a href="组织建设.html"><i class="fa fa-sitemap"></i> 组织建设</a>
+      <a href="学习培训.html"><i class="fa fa-book"></i> 学习培训</a>
+      <a href="活动管理.html" class="active"><i class="fa fa-calendar"></i> 活动管理</a>
+      <a href="统计分析.html"><i class="fa fa-bar-chart"></i> 统计分析</a>
+      <a href="系统设置.html"><i class="fa fa-cog"></i> 系统设置</a>
+    </div>
+    <div class="user-info">
+      <img src="https://picsum.photos/id/64/35/35" alt="用户头像">
+      <span>管理员</span>
+      <i class="fa fa-sign-out" style="cursor: pointer;" onclick="alert('退出登录')"></i>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="content">
+      <div class="content-header">
+        <h2><i class="fa fa-calendar"></i> 组织生活与活动管理</h2>
+        <div class="operate-btn">
+          <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fa fa-plus"></i> 新增活动
+          </button>
+          <button class="btn btn-success" onclick="exportData('活动数据')">
+            <i class="fa fa-download"></i> 导出数据
+          </button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <form class="search-form" onsubmit="return false;">
+          <div class="form-group">
+            <label>活动名称</label>
+            <input type="text" class="form-control" id="searchName" placeholder="名称或编号">
+          </div>
+          <div class="form-group">
+            <label>活动类型</label>
+            <select class="form-control" id="searchType">
+              <option value="">全部</option>
+              <option>主题党日</option>
+              <option>支部党员大会</option>
+              <option>支委会</option>
+              <option>党小组会</option>
+              <option>党课</option>
+              <option>组织生活会</option>
+              <option>民主评议党员</option>
+              <option>志愿服务</option>
+              <option>其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>主办组织</label>
+            <select class="form-control" id="searchOrg">
+              <option value="">全部</option>
+              <option>机关第一党支部</option>
+              <option>机关第二党支部</option>
+              <option>生产党支部</option>
+              <option>青年先锋党支部</option>
+              <option>离退休党支部</option>
+              <option>生产经营党总支</option>
+              <option>陵川项目临时党支部</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>状态</label>
+            <select class="form-control" id="searchState">
+              <option value="">全部</option>
+              <option>待审核</option>
+              <option>已通过</option>
+              <option>进行中</option>
+              <option>已完成</option>
+              <option>已驳回</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 0 0 auto; min-width: auto;">
+            <label>&nbsp;</label>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-primary" onclick="handleSearch()">
+                <i class="fa fa-search"></i> 查询
+              </button>
+              <button type="button" class="btn btn-default" onclick="handleReset()">
+                <i class="fa fa-refresh"></i> 重置
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="data-table">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>序号</th>
+                <th>活动名称</th>
+                <th>活动类型</th>
+                <th>主办组织</th>
+                <th>主持人</th>
+                <th>活动时间</th>
+                <th>活动地点</th>
+                <th>应到/实到</th>
+                <th>出勤率</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="actTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <ul class="pagination" id="pagination"></ul>
+      <div class="page-info" id="pageInfo"></div>
+    </div>
+  </div>
+
+  <!-- 新增/编辑 -->
+  <div id="actFormModal" class="modal">
+    <div class="modal-content wide">
+      <div class="modal-header">
+        <h3 id="formModalTitle">新增活动</h3>
+        <button class="close" onclick="closeModal('actFormModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="actForm" onsubmit="saveAct(event)">
+          <input type="hidden" id="editId">
+          <div class="detail-section">
+            <h4>基本信息</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>活动名称 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fName" required>
+              </div>
+              <div class="form-group">
+                <label>活动编号 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fCode" placeholder="如 HD-JC-2026-001" required>
+              </div>
+              <div class="form-group">
+                <label>活动类型 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fType" required>
+                  <option value="">请选择</option>
+                  <option>主题党日</option>
+                  <option>支部党员大会</option>
+                  <option>支委会</option>
+                  <option>党小组会</option>
+                  <option>党课</option>
+                  <option>组织生活会</option>
+                  <option>民主评议党员</option>
+                  <option>志愿服务</option>
+                  <option>其他</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>主办组织 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fOrg" required>
+                  <option value="">请选择</option>
+                  <option>机关第一党支部</option>
+                  <option>机关第二党支部</option>
+                  <option>生产党支部</option>
+                  <option>青年先锋党支部</option>
+                  <option>离退休党支部</option>
+                  <option>生产经营党总支</option>
+                  <option>陵川项目临时党支部</option>
+                  <option>党校教职工党支部</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>协办单位</label>
+                <input type="text" class="form-control" id="fCoOrg">
+              </div>
+              <div class="form-group">
+                <label>状态 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fState" required>
+                  <option>待审核</option>
+                  <option>已通过</option>
+                  <option>进行中</option>
+                  <option>已完成</option>
+                  <option>已驳回</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>时间地点与人员</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>开始时间 <span style="color: red;">*</span></label>
+                <input type="datetime-local" class="form-control" id="fStart" required>
+              </div>
+              <div class="form-group">
+                <label>结束时间 <span style="color: red;">*</span></label>
+                <input type="datetime-local" class="form-control" id="fEnd" required>
+              </div>
+              <div class="form-group">
+                <label>活动地点 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fPlace" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>主持人 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fHost" required>
+              </div>
+              <div class="form-group">
+                <label>记录人</label>
+                <input type="text" class="form-control" id="fRecorder">
+              </div>
+              <div class="form-group">
+                <label>联系电话</label>
+                <input type="text" class="form-control" id="fPhone">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>应到人数 <span style="color: red;">*</span></label>
+                <input type="number" class="form-control" id="fShould" min="0" required>
+              </div>
+              <div class="form-group">
+                <label>实到人数</label>
+                <input type="number" class="form-control" id="fActual" min="0">
+              </div>
+              <div class="form-group">
+                <label>请假人数</label>
+                <input type="number" class="form-control" id="fLeave" min="0">
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>活动安排</h4>
+            <div class="form-group">
+              <label>活动主题 / 主要内容 <span style="color: red;">*</span></label>
+              <textarea class="form-control" id="fContent" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+              <label>会议议程</label>
+              <textarea class="form-control" id="fAgenda" rows="3" placeholder="每行一条议程"></textarea>
+            </div>
+            <div class="form-group">
+              <label>活动总结</label>
+              <textarea class="form-control" id="fSummary" rows="3" placeholder="活动结束后填写"></textarea>
+            </div>
+            <div class="form-group">
+              <label>备注</label>
+              <textarea class="form-control" id="fRemark" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-default" onclick="closeModal('actFormModal')">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查看 -->
+  <div id="viewActModal" class="modal">
+    <div class="modal-content wide">
+      <div class="modal-header">
+        <h3>查看活动详情</h3>
+        <button class="close" onclick="closeModal('viewActModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="viewActBody"></div>
+    </div>
+  </div>
+
+  <!-- 活动总结 -->
+  <div id="summaryActModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>填写活动总结</h3>
+        <button class="close" onclick="closeModal('summaryActModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="submitSummary(event)">
+          <input type="hidden" id="summaryId">
+          <div class="form-group">
+            <label>活动名称</label>
+            <input type="text" class="form-control" id="summaryName" readonly>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>实到人数 <span style="color: red;">*</span></label>
+              <input type="number" class="form-control" id="summaryActual" min="0" required>
+            </div>
+            <div class="form-group">
+              <label>请假人数</label>
+              <input type="number" class="form-control" id="summaryLeave" min="0" value="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>活动总结 <span style="color: red;">*</span></label>
+            <textarea class="form-control" id="summaryText" rows="6" required placeholder="请填写活动开展情况、学习成效、下一步打算等..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>活动照片</label>
+            <input type="file" class="form-control" multiple accept="image/*">
+            <div style="font-size: 13px; color: #999; margin-top: 6px;">演示环境仅作示意，不会实际上传</div>
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn btn-default" onclick="closeModal('summaryActModal')">取消</button>
+            <button type="submit" class="btn btn-primary">提交并办结</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    var acts = [
+      {
+        id: 1, name: '「学思践悟」三月主题党日', code: 'HD-JC-2026-001', type: '主题党日',
+        org: '机关第一党支部', coOrg: '晋城市政务服务中心综合科', state: '进行中',
+        start: '2026-03-15T14:00', end: '2026-03-15T17:00',
+        place: '晋城市政务服务中心三楼党建活动室',
+        host: '陈志远', recorder: '何静', phone: '0356-2051231',
+        should: 28, actual: 26, leave: 2,
+        content: '围绕学习贯彻习近平新时代中国特色社会主义思想和晋城市委关于作风建设部署，开展集中学习、交流研讨和先锋岗点评。',
+        agenda: '支部书记领学重要讲话精神\n分组交流窗口服务提质增效做法\n点评先锋岗创建进展\n部署下阶段学习任务',
+        summary: '', remark: '请党员提前准备交流发言提纲'
+      },
+      {
+        id: 2, name: '一季度支部党员大会', code: 'HD-JC-2026-002', type: '支部党员大会',
+        org: '机关第二党支部', coOrg: '', state: '待审核',
+        start: '2026-03-25T09:00', end: '2026-03-25T11:30',
+        place: '晋城市城区泽州路66号组织部二楼会议室',
+        host: '周雅琴', recorder: '王美玲', phone: '0356-2051232',
+        should: 24, actual: 0, leave: 0,
+        content: '传达上级党组织近期工作要求，审议支部工作报告，讨论接收预备党员及有关事项。',
+        agenda: '传达上级文件精神\n报告一季度支部工作\n讨论预备党员转正相关事项\n党员发言与表决',
+        summary: '', remark: '需报机关工委备案后召开'
+      },
+      {
+        id: 3, name: '「弘扬锡崖沟精神」专题党课', code: 'HD-JC-2026-003', type: '党课',
+        org: '生产党支部', coOrg: '生产经营党总支', state: '已完成',
+        start: '2026-02-20T15:00', end: '2026-02-20T17:00',
+        place: '泽州县巴公镇建设路18号项目部会议室',
+        host: '李建国', recorder: '郑丽', phone: '0356-2186618',
+        should: 35, actual: 33, leave: 2,
+        content: '由支部书记主讲锡崖沟精神内涵，结合工程建设攻坚任务谈党员责任担当。',
+        agenda: '锡崖沟精神专题党课\n一线党员结合岗位谈体会\n安全与攻坚任务再动员',
+        summary: '本次党课应到35人、实到33人，党员结合项目工期节点谈认识，进一步凝聚攻坚合力。会后形成学习纪要并上传党建云平台。',
+        remark: '驻陵川流动党员视频连线参会'
+      },
+      {
+        id: 4, name: '支委会研究换届筹备工作', code: 'HD-JC-2026-004', type: '支委会',
+        org: '生产经营党总支', coOrg: '', state: '已通过',
+        start: '2026-04-02T09:30', end: '2026-04-02T11:00',
+        place: '晋城市城区兰花路128号城建集团总部三楼会议室',
+        host: '林志鹏', recorder: '郑丽', phone: '0356-2186600',
+        should: 7, actual: 0, leave: 0,
+        content: '研究党总支换届选举筹备方案、时间安排及候选人初步建议人选，明确责任分工。',
+        agenda: '通报换届政策要求\n研究筹备工作方案\n明确材料报送节点\n其他事项',
+        summary: '', remark: '会议材料会前分发委员审阅'
+      },
+      {
+        id: 5, name: '2025年度组织生活会暨民主评议党员', code: 'HD-JC-2025-028', type: '组织生活会',
+        org: '机关第一党支部', coOrg: '', state: '已完成',
+        start: '2026-01-18T14:00', end: '2026-01-18T18:00',
+        place: '晋城市政务服务中心三楼党建活动室',
+        host: '陈志远', recorder: '孙涛', phone: '0356-2051231',
+        should: 28, actual: 27, leave: 1,
+        content: '对照检视整改要求，开展批评与自我批评，完成民主评议党员投票并形成评议结果。',
+        agenda: '通报会前征求意见情况\n班子对照检查发言\n党员互评与测评\n书记点评并提出整改要求',
+        summary: '会议严肃认真，批评与自我批评较真碰硬。民主评议结果：优秀党员4名、合格23名，无不合格等次。整改事项已列入支部台账。',
+        remark: ''
+      },
+      {
+        id: 6, name: '青年党员「我为群众办实事」志愿服务', code: 'HD-JC-2026-005', type: '志愿服务',
+        org: '青年先锋党支部', coOrg: '晋城市融媒体中心、城区凤鸣社区', state: '已通过',
+        start: '2026-04-12T09:00', end: '2026-04-12T12:00',
+        place: '晋城市城区凤鸣社区党群服务中心',
+        host: '黄芳', recorder: '赵晓雯', phone: '15935604567',
+        should: 16, actual: 0, leave: 0,
+        content: '开展政策宣传、便民咨询、助老帮困等志愿服务，践行为民宗旨。',
+        agenda: '活动动员与分组\n政策宣传与便民服务\n走访困难群众\n活动复盘小结',
+        summary: '', remark: '统一穿着志愿红，自备口罩与工作证'
+      },
+      {
+        id: 7, name: '离退休党员重阳敬老主题活动', code: 'HD-JC-2025-031', type: '主题党日',
+        org: '离退休党支部', coOrg: '晋城市老干部活动中心', state: '已完成',
+        start: '2025-10-11T09:30', end: '2025-10-11T11:30',
+        place: '晋城市城区红星街15号老干部活动中心',
+        host: '吴强', recorder: '吴强', phone: '0356-2051888',
+        should: 42, actual: 38, leave: 4,
+        content: '组织离退休党员开展健康讲座、红色故事宣讲和文艺联谊，丰富晚年精神文化生活。',
+        agenda: '健康知识讲座\n老党员红色故事分享\n文艺联谊节目\n走访慰问行动不便党员',
+        summary: '活动气氛温馨，参与面广。走访慰问行动不便老党员4人，转达党组织关怀。',
+        remark: ''
+      },
+      {
+        id: 8, name: '第一党小组学习《纪律处分条例》', code: 'HD-JC-2026-006', type: '党小组会',
+        org: '机关第一党支部', coOrg: '', state: '进行中',
+        start: '2026-03-12T16:00', end: '2026-03-12T17:30',
+        place: '晋城市政务服务大厅党员活动角',
+        host: '孙涛', recorder: '何静', phone: '13535604321',
+        should: 9, actual: 9, leave: 0,
+        content: '党小组集中学习《中国共产党纪律处分条例》修订要点，结合窗口岗位谈廉洁风险防控。',
+        agenda: '领学条例重点章节\n对照岗位查风险点\n明确小组学习计划',
+        summary: '', remark: ''
+      },
+      {
+        id: 9, name: '「廉洁过春节」廉政教育主题党日', code: 'HD-JC-2026-007', type: '主题党日',
+        org: '机关第二党支部', coOrg: '市纪委监委派驻组', state: '已完成',
+        start: '2026-01-22T14:30', end: '2026-01-22T16:30',
+        place: '晋城市城区泽州路66号组织部二楼会议室',
+        host: '周雅琴', recorder: '王美玲', phone: '0356-2051232',
+        should: 24, actual: 24, leave: 0,
+        content: '观看警示教育片，学习节日廉政纪律要求，签订廉洁过节承诺书。',
+        agenda: '观看警示教育片\n廉政纪律专题辅导\n签订廉洁过节承诺\n支部书记讲话',
+        summary: '全员到会，签订承诺书24份。会后在支部群发布节日纪律提醒，无违纪信访反映。',
+        remark: ''
+      },
+      {
+        id: 10, name: '流动党员线上组织生活会', code: 'HD-JC-2026-008', type: '组织生活会',
+        org: '陵川项目临时党支部', coOrg: '生产经营党总支', state: '待审核',
+        start: '2026-03-28T19:00', end: '2026-03-28T20:30',
+        place: '腾讯会议（陵川项目现场党建活动室设分会场）',
+        host: '林志鹏', recorder: '林志鹏', phone: '18735605678',
+        should: 9, actual: 0, leave: 0,
+        content: '组织驻县流动党员开展线上组织生活，汇报思想与项目攻坚情况，研究下一阶段党建与生产融合措施。',
+        agenda: '党员思想汇报\n项目攻坚情况交流\n研究党建融入生产措施\n党费收缴提醒',
+        summary: '', remark: '会议号会前一天通知，请确保网络畅通'
+      }
+    ];
+
+    var filtered = acts.slice();
+    var currentPage = 1;
+    var pageSize = 8;
+
+    function stateBadge(s) {
+      var map = {
+        '待审核': 'badge-warning',
+        '已通过': 'badge-info',
+        '进行中': 'badge-info',
+        '已完成': 'badge-success',
+        '已驳回': 'badge-danger'
+      };
+      return '<span class="badge ' + (map[s] || 'badge-info') + '">' + s + '</span>';
+    }
+
+    function typeBadge(t) {
+      if (t === '主题党日' || t === '党课') return '<span class="badge badge-danger">' + t + '</span>';
+      if (t === '组织生活会' || t === '民主评议党员') return '<span class="badge badge-warning">' + t + '</span>';
+      if (t === '志愿服务') return '<span class="badge badge-success">' + t + '</span>';
+      return '<span class="badge badge-info">' + t + '</span>';
+    }
+
+    function fmtTime(v) {
+      if (!v) return '—';
+      return v.replace('T', ' ').slice(0, 16);
+    }
+
+    function attendanceRate(a) {
+      if (!a.should) return '—';
+      var rate = Math.round((a.actual || 0) * 100 / a.should);
+      var cls = rate >= 90 ? 'rate-ok' : 'rate-warn';
+      if (a.state === '待审核' || a.state === '已通过' || a.state === '已驳回') {
+        if (!a.actual) return '<span style="color:#999;">—</span>';
+      }
+      return '<span class="' + cls + '">' + rate + '%</span>';
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent = acts.length;
+      document.getElementById('statPending').textContent = acts.filter(function (a) { return a.state === '待审核'; }).length;
+      document.getElementById('statDoing').textContent = acts.filter(function (a) { return a.state === '进行中' || a.state === '已通过'; }).length;
+      document.getElementById('statDone').textContent = acts.filter(function (a) { return a.state === '已完成'; }).length;
+    }
+
+    function actionBtns(a) {
+      var html = '<button class="btn btn-sm btn-info" onclick="viewAct(' + a.id + ')">查看</button>' +
+        '<button class="btn btn-sm btn-primary" onclick="openEditModal(' + a.id + ')">编辑</button>';
+      if (a.state === '待审核') {
+        html += '<button class="btn btn-sm btn-success" onclick="approveAct(' + a.id + ')">审核</button>';
+      } else if (a.state === '已通过') {
+        html += '<button class="btn btn-sm btn-success" onclick="startAct(' + a.id + ')">开始</button>';
+      } else if (a.state === '进行中') {
+        html += '<button class="btn btn-sm btn-default" onclick="openSummaryModal(' + a.id + ')">总结</button>';
+      } else if (a.state === '已完成') {
+        html += '<button class="btn btn-sm btn-default" onclick="openSummaryModal(' + a.id + ')">总结</button>';
+      }
+      html += '<button class="btn btn-sm btn-danger" onclick="deleteAct(' + a.id + ')">删除</button>';
+      return '<div class="action-btns">' + html + '</div>';
+    }
+
+    function renderTable() {
+      var start = (currentPage - 1) * pageSize;
+      var pageData = filtered.slice(start, start + pageSize);
+      var tbody = document.getElementById('actTableBody');
+
+      if (!pageData.length) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#999;padding:40px;">暂无符合条件的数据</td></tr>';
+      } else {
+        tbody.innerHTML = pageData.map(function (a, i) {
+          return '<tr>' +
+            '<td>' + (start + i + 1) + '</td>' +
+            '<td class="act-name">' + a.name + '<span class="code">' + a.code + '</span></td>' +
+            '<td>' + typeBadge(a.type) + '</td>' +
+            '<td>' + a.org + '</td>' +
+            '<td>' + a.host + '</td>' +
+            '<td>' + fmtTime(a.start) + '</td>' +
+            '<td style="max-width:180px;white-space:normal;word-break:break-word;">' + a.place + '</td>' +
+            '<td>' + a.should + ' / ' + (a.actual || 0) + '</td>' +
+            '<td>' + attendanceRate(a) + '</td>' +
+            '<td>' + stateBadge(a.state) + '</td>' +
+            '<td>' + actionBtns(a) + '</td></tr>';
+        }).join('');
+      }
+      renderPagination();
+      updateStats();
+    }
+
+    function renderPagination() {
+      var total = filtered.length;
+      var pages = Math.max(1, Math.ceil(total / pageSize));
+      if (currentPage > pages) currentPage = pages;
+      var html = '<li class="page-item"><a class="page-link" href="#" onclick="goPage(' + (currentPage - 1) + ');return false;">上一页</a></li>';
+      for (var p = 1; p <= pages; p++) {
+        html += '<li class="page-item' + (p === currentPage ? ' active' : '') + '"><a class="page-link" href="#" onclick="goPage(' + p + ');return false;">' + p + '</a></li>';
+      }
+      html += '<li class="page-item"><a class="page-link" href="#" onclick="goPage(' + (currentPage + 1) + ');return false;">下一页</a></li>';
+      document.getElementById('pagination').innerHTML = html;
+      document.getElementById('pageInfo').textContent = '共 ' + total + ' 条记录，第 ' + currentPage + ' / ' + pages + ' 页';
+    }
+
+    function goPage(p) {
+      var pages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      if (p < 1 || p > pages) return;
+      currentPage = p;
+      renderTable();
+    }
+
+    function handleSearch() {
+      var name = document.getElementById('searchName').value.trim();
+      var type = document.getElementById('searchType').value;
+      var org = document.getElementById('searchOrg').value;
+      var state = document.getElementById('searchState').value;
+      filtered = acts.filter(function (a) {
+        if (name && a.name.indexOf(name) === -1 && a.code.indexOf(name) === -1) return false;
+        if (type && a.type !== type) return false;
+        if (org && a.org !== org) return false;
+        if (state && a.state !== state) return false;
+        return true;
+      });
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleReset() {
+      document.getElementById('searchName').value = '';
+      document.getElementById('searchType').value = '';
+      document.getElementById('searchOrg').value = '';
+      document.getElementById('searchState').value = '';
+      filtered = acts.slice();
+      currentPage = 1;
+      renderTable();
+    }
+
+    function findAct(id) {
+      return acts.find(function (a) { return a.id === id; });
+    }
+
+    function item(label, val) {
+      return '<div class="detail-item"><span class="label">' + label + '：</span><span class="val">' + (val || '—') + '</span></div>';
+    }
+
+    function viewAct(id) {
+      var a = findAct(id);
+      if (!a) return;
+      var agenda = (a.agenda || '').split('\n').filter(Boolean).map(function (line) {
+        return '<li>' + line + '</li>';
+      }).join('');
+      var rate = a.should ? Math.round((a.actual || 0) * 100 / a.should) + '%' : '—';
+
+      document.getElementById('viewActBody').innerHTML =
+        '<div class="detail-section"><h4>基本信息</h4><div class="detail-grid">' +
+        item('活动名称', a.name) + item('活动编号', a.code) + item('活动类型', a.type) +
+        item('主办组织', a.org) + item('协办单位', a.coOrg) + item('状态', a.state) +
+        '</div></div>' +
+        '<div class="detail-section"><h4>时间地点与人员</h4><div class="detail-grid">' +
+        item('开始时间', fmtTime(a.start)) + item('结束时间', fmtTime(a.end)) + item('活动地点', a.place) +
+        item('主持人', a.host) + item('记录人', a.recorder) + item('联系电话', a.phone) +
+        item('应到人数', a.should) + item('实到人数', a.actual) + item('请假人数', a.leave) +
+        item('出勤率', rate) +
+        '</div></div>' +
+        '<div class="detail-section"><h4>活动内容</h4><p style="color:#555;line-height:1.8;font-size:15px;margin:0;">' +
+        (a.content || '—') + '</p></div>' +
+        '<div class="detail-section"><h4>会议议程</h4>' +
+        (agenda ? '<ul class="agenda-list">' + agenda + '</ul>' : '<p style="color:#999;margin:0;">暂无议程</p>') +
+        '</div>' +
+        '<div class="detail-section"><h4>活动总结</h4>' +
+        (a.summary ? '<div class="summary-box">' + a.summary + '</div>' : '<p style="color:#999;margin:0;">尚未填写总结</p>') +
+        '</div>' +
+        (a.remark ? '<div class="detail-section"><h4>备注</h4><p style="color:#555;margin:0;line-height:1.8;">' + a.remark + '</p></div>' : '') +
+        '<div style="display:flex;justify-content:flex-end;gap:10px;">' +
+        '<button type="button" class="btn btn-default" onclick="closeModal(\'viewActModal\')">关闭</button>' +
+        '<button type="button" class="btn btn-primary" onclick="closeModal(\'viewActModal\');openEditModal(' + a.id + ')">编辑</button>' +
+        '</div>';
+      openModal('viewActModal');
+    }
+
+    function clearForm() {
+      document.getElementById('editId').value = '';
+      document.getElementById('actForm').reset();
+      document.getElementById('fState').value = '待审核';
+    }
+
+    function fillForm(a) {
+      document.getElementById('editId').value = a.id;
+      document.getElementById('fName').value = a.name;
+      document.getElementById('fCode').value = a.code;
+      document.getElementById('fType').value = a.type;
+      document.getElementById('fOrg').value = a.org;
+      document.getElementById('fCoOrg').value = a.coOrg || '';
+      document.getElementById('fState').value = a.state;
+      document.getElementById('fStart').value = a.start;
+      document.getElementById('fEnd').value = a.end;
+      document.getElementById('fPlace').value = a.place;
+      document.getElementById('fHost').value = a.host;
+      document.getElementById('fRecorder').value = a.recorder || '';
+      document.getElementById('fPhone').value = a.phone || '';
+      document.getElementById('fShould').value = a.should;
+      document.getElementById('fActual').value = a.actual || 0;
+      document.getElementById('fLeave').value = a.leave || 0;
+      document.getElementById('fContent').value = a.content || '';
+      document.getElementById('fAgenda').value = a.agenda || '';
+      document.getElementById('fSummary').value = a.summary || '';
+      document.getElementById('fRemark').value = a.remark || '';
+    }
+
+    function openAddModal() {
+      clearForm();
+      document.getElementById('formModalTitle').textContent = '新增活动';
+      openModal('actFormModal');
+    }
+
+    function openEditModal(id) {
+      var a = findAct(id);
+      if (!a) return;
+      fillForm(a);
+      document.getElementById('formModalTitle').textContent = '编辑活动信息';
+      openModal('actFormModal');
+    }
+
+    function collectForm() {
+      return {
+        name: document.getElementById('fName').value.trim(),
+        code: document.getElementById('fCode').value.trim(),
+        type: document.getElementById('fType').value,
+        org: document.getElementById('fOrg').value,
+        coOrg: document.getElementById('fCoOrg').value.trim(),
+        state: document.getElementById('fState').value,
+        start: document.getElementById('fStart').value,
+        end: document.getElementById('fEnd').value,
+        place: document.getElementById('fPlace').value.trim(),
+        host: document.getElementById('fHost').value.trim(),
+        recorder: document.getElementById('fRecorder').value.trim(),
+        phone: document.getElementById('fPhone').value.trim(),
+        should: Number(document.getElementById('fShould').value) || 0,
+        actual: Number(document.getElementById('fActual').value) || 0,
+        leave: Number(document.getElementById('fLeave').value) || 0,
+        content: document.getElementById('fContent').value.trim(),
+        agenda: document.getElementById('fAgenda').value.trim(),
+        summary: document.getElementById('fSummary').value.trim(),
+        remark: document.getElementById('fRemark').value.trim()
+      };
+    }
+
+    function saveAct(e) {
+      e.preventDefault();
+      var id = document.getElementById('editId').value;
+      var data = collectForm();
+      if (id) {
+        var idx = acts.findIndex(function (a) { return a.id === Number(id); });
+        if (idx > -1) acts[idx] = Object.assign({}, acts[idx], data);
+        showMessage('保存成功', 'success');
+      } else {
+        data.id = acts.length ? Math.max.apply(null, acts.map(function (a) { return a.id; })) + 1 : 1;
+        acts.unshift(data);
+        showMessage('新增成功', 'success');
+      }
+      closeModal('actFormModal');
+      handleSearch();
+    }
+
+    function approveAct(id) {
+      var a = findAct(id);
+      if (!a) return;
+      if (confirm('确认审核通过该活动？')) {
+        a.state = '已通过';
+        showMessage('审核通过', 'success');
+        handleSearch();
+      }
+    }
+
+    function startAct(id) {
+      var a = findAct(id);
+      if (!a) return;
+      a.state = '进行中';
+      showMessage('活动已开始', 'success');
+      handleSearch();
+    }
+
+    function openSummaryModal(id) {
+      var a = findAct(id);
+      if (!a) return;
+      document.getElementById('summaryId').value = a.id;
+      document.getElementById('summaryName').value = a.name;
+      document.getElementById('summaryActual').value = a.actual || a.should || 0;
+      document.getElementById('summaryLeave').value = a.leave || 0;
+      document.getElementById('summaryText').value = a.summary || '';
+      openModal('summaryActModal');
+    }
+
+    function submitSummary(e) {
+      e.preventDefault();
+      var id = Number(document.getElementById('summaryId').value);
+      var a = findAct(id);
+      if (!a) return;
+      a.actual = Number(document.getElementById('summaryActual').value) || 0;
+      a.leave = Number(document.getElementById('summaryLeave').value) || 0;
+      a.summary = document.getElementById('summaryText').value.trim();
+      a.state = '已完成';
+      closeModal('summaryActModal');
+      showMessage('总结已提交，活动已办结', 'success');
+      handleSearch();
+    }
+
+    function deleteAct(id) {
+      confirmDelete('确定要删除该活动吗？', function () {
+        acts = acts.filter(function (a) { return a.id !== id; });
+        handleSearch();
+        showMessage('删除成功', 'success');
+      });
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
