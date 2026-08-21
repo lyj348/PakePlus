@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧党建综合智能管理平台 - 党员管理</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .member-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .member-stat {
+      background: #fff;
+      border-radius: 8px;
+      padding: 18px 22px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .member-stat .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .member-stat .icon.red { background: linear-gradient(135deg, #d32f2f, #e57373); }
+    .member-stat .icon.blue { background: linear-gradient(135deg, #1976d2, #64b5f6); }
+    .member-stat .icon.orange { background: linear-gradient(135deg, #f57c00, #ffb74d); }
+    .member-stat .icon.green { background: linear-gradient(135deg, #388e3c, #81c784); }
+    .member-stat .num {
+      font-size: 28px;
+      font-weight: 700;
+      color: #222;
+      line-height: 1.2;
+    }
+    .member-stat .label {
+      font-size: 14px;
+      color: #888;
+      margin-top: 2px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    .table-wrap::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+      height: 0;
+    }
+    .table th, .table td {
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px 28px;
+    }
+    .detail-item {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #555;
+    }
+    .detail-item .label {
+      color: #999;
+      margin-right: 6px;
+      min-width: 90px;
+      display: inline-block;
+    }
+    .detail-item .val {
+      color: #222;
+      font-weight: 500;
+    }
+    .detail-section {
+      margin-bottom: 22px;
+    }
+    .detail-section h4 {
+      font-size: 16px;
+      color: #d32f2f;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .modal-content.wide {
+      max-width: 920px;
+    }
+    .page-info {
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    @media (max-width: 992px) {
+      .member-stats { grid-template-columns: repeat(2, 1fr); }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <div class="logo">
+      <i class="fa fa-flag"></i>
+      智慧党建综合智能管理平台
+    </div>
+    <div class="nav-tabs">
+      <a href="index.html"><i class="fa fa-home"></i> 首页</a>
+      <a href="党员管理.html" class="active"><i class="fa fa-users"></i> 党员管理</a>
+      <a href="组织建设.html"><i class="fa fa-sitemap"></i> 组织建设</a>
+      <a href="学习培训.html"><i class="fa fa-book"></i> 学习培训</a>
+      <a href="活动管理.html"><i class="fa fa-calendar"></i> 活动管理</a>
+      <a href="统计分析.html"><i class="fa fa-bar-chart"></i> 统计分析</a>
+      <a href="系统设置.html"><i class="fa fa-cog"></i> 系统设置</a>
+    </div>
+    <div class="user-info">
+      <img src="https://picsum.photos/id/64/35/35" alt="用户头像">
+      <span>管理员</span>
+      <i class="fa fa-sign-out" style="cursor: pointer;" onclick="alert('退出登录')"></i>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="content">
+      <div class="content-header">
+        <h2><i class="fa fa-users"></i> 党员信息管理</h2>
+        <div class="operate-btn">
+          <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fa fa-plus"></i> 新增党员
+          </button>
+          <button class="btn btn-success" onclick="exportData('党员信息')">
+            <i class="fa fa-download"></i> 导出数据
+          </button>
+          <button class="btn btn-default" onclick="importData('党员信息')">
+            <i class="fa fa-upload"></i> 导入数据
+          </button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <form class="search-form" onsubmit="return false;">
+          <div class="form-group">
+            <label>姓名</label>
+            <input type="text" class="form-control" id="searchName" placeholder="请输入姓名">
+          </div>
+          <div class="form-group">
+            <label>所属党组织</label>
+            <select class="form-control" id="searchOrg">
+              <option value="">全部</option>
+              <option>机关第一党支部</option>
+              <option>机关第二党支部</option>
+              <option>生产党支部</option>
+              <option>青年先锋党支部</option>
+              <option>离退休党支部</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>政治面貌</label>
+            <select class="form-control" id="searchStatus">
+              <option value="">全部</option>
+              <option>正式党员</option>
+              <option>预备党员</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>党员类别</label>
+            <select class="form-control" id="searchType">
+              <option value="">全部</option>
+              <option>在职党员</option>
+              <option>退休党员</option>
+              <option>流动党员</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 0 0 auto; min-width: auto;">
+            <label>&nbsp;</label>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-primary" onclick="handleSearch()">
+                <i class="fa fa-search"></i> 查询
+              </button>
+              <button type="button" class="btn btn-default" onclick="handleReset()">
+                <i class="fa fa-refresh"></i> 重置
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="data-table">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>序号</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>民族</th>
+                <th>学历</th>
+                <th>所属党组织</th>
+                <th>党内职务</th>
+                <th>入党时间</th>
+                <th>政治面貌</th>
+                <th>党员类别</th>
+                <th>联系电话</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="memberTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <ul class="pagination" id="pagination"></ul>
+      <div class="page-info" id="pageInfo"></div>
+    </div>
+  </div>
+
+  <!-- 新增/编辑 -->
+  <div id="memberFormModal" class="modal">
+    <div class="modal-content wide">
+      <div class="modal-header">
+        <h3 id="formModalTitle">新增党员</h3>
+        <button class="close" onclick="closeModal('memberFormModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="memberForm" onsubmit="saveMember(event)">
+          <input type="hidden" id="editId">
+          <div class="detail-section">
+            <h4>基本信息</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>姓名 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fName" required>
+              </div>
+              <div class="form-group">
+                <label>性别 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fGender" required>
+                  <option value="">请选择</option>
+                  <option>男</option>
+                  <option>女</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>民族 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fNation" required>
+                  <option>汉族</option>
+                  <option>回族</option>
+                  <option>满族</option>
+                  <option>蒙古族</option>
+                  <option>藏族</option>
+                  <option>壮族</option>
+                  <option>苗族</option>
+                  <option>其他</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>身份证号 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fIdCard" maxlength="18" required>
+              </div>
+              <div class="form-group">
+                <label>出生日期 <span style="color: red;">*</span></label>
+                <input type="date" class="form-control" id="fBirthday" required>
+              </div>
+              <div class="form-group">
+                <label>学历 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fEducation" required>
+                  <option value="">请选择</option>
+                  <option>博士研究生</option>
+                  <option>硕士研究生</option>
+                  <option>大学本科</option>
+                  <option>大学专科</option>
+                  <option>高中/中专</option>
+                  <option>初中及以下</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>组织关系</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>所属党组织 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fOrg" required>
+                  <option value="">请选择</option>
+                  <option>机关第一党支部</option>
+                  <option>机关第二党支部</option>
+                  <option>生产党支部</option>
+                  <option>青年先锋党支部</option>
+                  <option>离退休党支部</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>党内职务</label>
+                <select class="form-control" id="fPosition">
+                  <option>普通党员</option>
+                  <option>支部书记</option>
+                  <option>支部副书记</option>
+                  <option>组织委员</option>
+                  <option>宣传委员</option>
+                  <option>纪检委员</option>
+                  <option>党小组长</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>政治面貌 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fPolitical" required>
+                  <option value="">请选择</option>
+                  <option>正式党员</option>
+                  <option>预备党员</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>入党时间 <span style="color: red;">*</span></label>
+                <input type="date" class="form-control" id="fJoinDate" required>
+              </div>
+              <div class="form-group">
+                <label>转正时间</label>
+                <input type="date" class="form-control" id="fFormalDate">
+              </div>
+              <div class="form-group">
+                <label>党员类别 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fType" required>
+                  <option value="">请选择</option>
+                  <option>在职党员</option>
+                  <option>退休党员</option>
+                  <option>流动党员</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>状态 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fState" required>
+                  <option>正常</option>
+                  <option>外出流动</option>
+                  <option>停止党籍</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>入党介绍人</label>
+                <input type="text" class="form-control" id="fIntroducer" placeholder="请输入介绍人姓名">
+              </div>
+              <div class="form-group">
+                <label>党费缴纳至</label>
+                <input type="month" class="form-control" id="fDuesPaid">
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>工作与联系</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>工作单位 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fCompany" required>
+              </div>
+              <div class="form-group">
+                <label>职务/岗位</label>
+                <input type="text" class="form-control" id="fJob">
+              </div>
+              <div class="form-group">
+                <label>联系电话 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fPhone" maxlength="11" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>电子邮箱</label>
+                <input type="email" class="form-control" id="fEmail">
+              </div>
+              <div class="form-group" style="flex: 2;">
+                <label>家庭住址</label>
+                <input type="text" class="form-control" id="fAddress">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>备注</label>
+              <textarea class="form-control" id="fRemark" rows="2" placeholder="选填"></textarea>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+            <button type="button" class="btn btn-default" onclick="closeModal('memberFormModal')">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查看 -->
+  <div id="viewMemberModal" class="modal">
+    <div class="modal-content wide">
+      <div class="modal-header">
+        <h3>查看党员信息</h3>
+        <button class="close" onclick="closeModal('viewMemberModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="viewMemberBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    // 演示数据（山西晋城市）
+    var members = [
+      {
+        id: 1, name: '陈志远', gender: '男', nation: '汉族', birthday: '1985-03-12',
+        idCard: '140502198503122015', education: '大学本科',
+        org: '机关第一党支部', position: '支部书记', political: '正式党员',
+        joinDate: '2008-06-18', formalDate: '2009-06-18', type: '在职党员', state: '正常',
+        introducer: '刘振华', duesPaid: '2026-07',
+        company: '晋城市政务服务中心', job: '综合科科长', phone: '13835601234',
+        email: 'chenzhiyuan@jc.gov.cn', address: '山西省晋城市城区凤台街128号',
+        remark: '连续三年被评为晋城市优秀共产党员'
+      },
+      {
+        id: 2, name: '王美玲', gender: '女', nation: '汉族', birthday: '1990-07-25',
+        idCard: '140502199007254028', education: '硕士研究生',
+        org: '机关第二党支部', position: '组织委员', political: '正式党员',
+        joinDate: '2013-05-20', formalDate: '2014-05-20', type: '在职党员', state: '正常',
+        introducer: '陈志远', duesPaid: '2026-07',
+        company: '中共晋城市委组织部', job: '干部科主任科员', phone: '13935605678',
+        email: 'wangmeiling@jc.gov.cn', address: '山西省晋城市城区泽州路66号',
+        remark: ''
+      },
+      {
+        id: 3, name: '李建国', gender: '男', nation: '汉族', birthday: '1978-11-08',
+        idCard: '140525197811081219', education: '大学专科',
+        org: '生产党支部', position: '支部副书记', political: '正式党员',
+        joinDate: '2001-09-12', formalDate: '2002-09-12', type: '在职党员', state: '正常',
+        introducer: '张国强', duesPaid: '2026-07',
+        company: '晋城市城建集团有限公司', job: '项目经理', phone: '13735607890',
+        email: 'lijianguo@jcjsjt.com', address: '山西省晋城市泽州县巴公镇建设路18号',
+        remark: ''
+      },
+      {
+        id: 4, name: '赵晓雯', gender: '女', nation: '汉族', birthday: '1996-02-14',
+        idCard: '140502199602146036', education: '大学本科',
+        org: '青年先锋党支部', position: '普通党员', political: '预备党员',
+        joinDate: '2025-07-01', formalDate: '', type: '在职党员', state: '正常',
+        introducer: '王美玲、孙涛', duesPaid: '2026-07',
+        company: '晋城市大数据中心', job: '数据分析员', phone: '13635609876',
+        email: 'zhaoxiaowen@jc.gov.cn', address: '山西省晋城市城区新市西街36号',
+        remark: '预备期满拟于2026年7月转正'
+      },
+      {
+        id: 5, name: '孙涛', gender: '男', nation: '汉族', birthday: '1988-09-30',
+        idCard: '140502198809301517', education: '大学本科',
+        org: '机关第一党支部', position: '宣传委员', political: '正式党员',
+        joinDate: '2010-12-08', formalDate: '2011-12-08', type: '在职党员', state: '正常',
+        introducer: '陈志远', duesPaid: '2026-07',
+        company: '晋城市政务服务中心', job: '宣传科副科长', phone: '13535604321',
+        email: 'suntao@jc.gov.cn', address: '山西省晋城市城区黄华街52号',
+        remark: ''
+      },
+      {
+        id: 6, name: '周雅琴', gender: '女', nation: '回族', birthday: '1982-04-18',
+        idCard: '140502198204184029', education: '硕士研究生',
+        org: '机关第二党支部', position: '支部书记', political: '正式党员',
+        joinDate: '2005-06-30', formalDate: '2006-06-30', type: '在职党员', state: '正常',
+        introducer: '马超', duesPaid: '2026-07',
+        company: '晋城市人力资源和社会保障局', job: '办公室主任', phone: '13335606543',
+        email: 'zhouyaqin@jc.gov.cn', address: '山西省晋城市城区兰花路88号',
+        remark: '晋城市优秀党务工作者'
+      },
+      {
+        id: 7, name: '吴强', gender: '男', nation: '汉族', birthday: '1963-12-05',
+        idCard: '140502196312051218', education: '大学专科',
+        org: '离退休党支部', position: '党小组长', political: '正式党员',
+        joinDate: '1986-07-01', formalDate: '1987-07-01', type: '退休党员', state: '正常',
+        introducer: '李建国', duesPaid: '2026-06',
+        company: '晋城市财政局（退休）', job: '原预算处处长', phone: '13135608765',
+        email: 'wuqiang@jc.gov.cn', address: '山西省晋城市城区红星街15号',
+        remark: '1986年入党，党龄近40年'
+      },
+      {
+        id: 8, name: '郑丽', gender: '女', nation: '汉族', birthday: '1992-08-21',
+        idCard: '140581199208214028', education: '大学本科',
+        org: '生产党支部', position: '普通党员', political: '正式党员',
+        joinDate: '2016-11-15', formalDate: '2017-11-15', type: '在职党员', state: '正常',
+        introducer: '李建国', duesPaid: '2026-07',
+        company: '晋城市城建集团有限公司', job: '安全员', phone: '15835602345',
+        email: 'zhengli@jcjsjt.com', address: '山西省晋城市高平市丹河东路26号',
+        remark: ''
+      },
+      {
+        id: 9, name: '马超', gender: '男', nation: '回族', birthday: '1980-01-16',
+        idCard: '140502198001161519', education: '博士研究生',
+        org: '机关第二党支部', position: '纪检委员', political: '正式党员',
+        joinDate: '2004-03-25', formalDate: '2005-03-25', type: '在职党员', state: '正常',
+        introducer: '周雅琴', duesPaid: '2026-07',
+        company: '中共晋城市委党校', job: '科研处处长', phone: '18635603456',
+        email: 'machao@jc.gov.cn', address: '山西省晋城市城区文昌街9号',
+        remark: ''
+      },
+      {
+        id: 10, name: '黄芳', gender: '女', nation: '汉族', birthday: '1994-05-09',
+        idCard: '140522199405094036', education: '大学本科',
+        org: '青年先锋党支部', position: '宣传委员', political: '正式党员',
+        joinDate: '2018-06-28', formalDate: '2019-06-28', type: '在职党员', state: '正常',
+        introducer: '孙涛', duesPaid: '2026-07',
+        company: '晋城市融媒体中心', job: '编辑', phone: '15935604567',
+        email: 'huangfang@jcrmt.cn', address: '山西省晋城市阳城县凤凰路12号',
+        remark: ''
+      },
+      {
+        id: 11, name: '林志鹏', gender: '男', nation: '汉族', birthday: '1987-10-03',
+        idCard: '140525198710031517', education: '大学本科',
+        org: '生产党支部', position: '支部书记', political: '正式党员',
+        joinDate: '2009-07-01', formalDate: '2010-07-01', type: '在职党员', state: '外出流动',
+        introducer: '李建国', duesPaid: '2026-05',
+        company: '晋城市城建集团有限公司（驻县项目）', job: '驻县项目负责人', phone: '18735605678',
+        email: 'linzhipeng@jcjsjt.com', address: '山西省晋城市城区泽州路200号',
+        remark: '赴陵川县重点工程现场，已办理流动党员手续'
+      },
+      {
+        id: 12, name: '何静', gender: '女', nation: '满族', birthday: '1998-06-17',
+        idCard: '140521199806174028', education: '大学本科',
+        org: '青年先锋党支部', position: '普通党员', political: '预备党员',
+        joinDate: '2025-12-01', formalDate: '', type: '在职党员', state: '正常',
+        introducer: '黄芳、赵晓雯', duesPaid: '2026-07',
+        company: '晋城市政务服务中心', job: '窗口办事员', phone: '13235606789',
+        email: 'hejing@jc.gov.cn', address: '山西省晋城市沁水县龙港镇梅河路8号',
+        remark: '新发展预备党员'
+      }
+    ];
+
+    var filtered = members.slice();
+    var currentPage = 1;
+    var pageSize = 10;
+
+    function politicalBadge(v) {
+      return v === '正式党员'
+        ? '<span class="badge badge-success">正式党员</span>'
+        : '<span class="badge badge-warning">预备党员</span>';
+    }
+
+    function stateBadge(v) {
+      if (v === '正常') return '<span class="badge badge-info">正常</span>';
+      if (v === '外出流动') return '<span class="badge badge-warning">外出流动</span>';
+      return '<span class="badge badge-danger">' + v + '</span>';
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent = members.length;
+      document.getElementById('statFormal').textContent = members.filter(function (m) { return m.political === '正式党员'; }).length;
+      document.getElementById('statPrep').textContent = members.filter(function (m) { return m.political === '预备党员'; }).length;
+      document.getElementById('statNormal').textContent = members.filter(function (m) { return m.state === '正常'; }).length;
+    }
+
+    function renderTable() {
+      var start = (currentPage - 1) * pageSize;
+      var pageData = filtered.slice(start, start + pageSize);
+      var tbody = document.getElementById('memberTableBody');
+
+      if (!pageData.length) {
+        tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:#999;padding:40px;">暂无符合条件的数据</td></tr>';
+      } else {
+        tbody.innerHTML = pageData.map(function (m, i) {
+          return '<tr>' +
+            '<td>' + (start + i + 1) + '</td>' +
+            '<td><strong>' + m.name + '</strong></td>' +
+            '<td>' + m.gender + '</td>' +
+            '<td>' + m.nation + '</td>' +
+            '<td>' + m.education + '</td>' +
+            '<td>' + m.org + '</td>' +
+            '<td>' + m.position + '</td>' +
+            '<td>' + m.joinDate + '</td>' +
+            '<td>' + politicalBadge(m.political) + '</td>' +
+            '<td>' + m.type + '</td>' +
+            '<td>' + m.phone + '</td>' +
+            '<td>' + stateBadge(m.state) + '</td>' +
+            '<td><div class="action-btns">' +
+            '<button class="btn btn-sm btn-info" onclick="viewMember(' + m.id + ')">查看</button>' +
+            '<button class="btn btn-sm btn-primary" onclick="openEditModal(' + m.id + ')">编辑</button>' +
+            '<button class="btn btn-sm btn-danger" onclick="deleteMember(' + m.id + ')">删除</button>' +
+            '</div></td></tr>';
+        }).join('');
+      }
+
+      renderPagination();
+      updateStats();
+    }
+
+    function renderPagination() {
+      var total = filtered.length;
+      var pages = Math.max(1, Math.ceil(total / pageSize));
+      if (currentPage > pages) currentPage = pages;
+
+      var html = '<li class="page-item"><a class="page-link" href="#" onclick="goPage(' + (currentPage - 1) + ');return false;">上一页</a></li>';
+      for (var p = 1; p <= pages; p++) {
+        html += '<li class="page-item' + (p === currentPage ? ' active' : '') + '">' +
+          '<a class="page-link" href="#" onclick="goPage(' + p + ');return false;">' + p + '</a></li>';
+      }
+      html += '<li class="page-item"><a class="page-link" href="#" onclick="goPage(' + (currentPage + 1) + ');return false;">下一页</a></li>';
+      document.getElementById('pagination').innerHTML = html;
+      document.getElementById('pageInfo').textContent = '共 ' + total + ' 条记录，第 ' + currentPage + ' / ' + pages + ' 页';
+    }
+
+    function goPage(p) {
+      var pages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      if (p < 1 || p > pages) return;
+      currentPage = p;
+      renderTable();
+    }
+
+    function handleSearch() {
+      var name = document.getElementById('searchName').value.trim();
+      var org = document.getElementById('searchOrg').value;
+      var status = document.getElementById('searchStatus').value;
+      var type = document.getElementById('searchType').value;
+
+      filtered = members.filter(function (m) {
+        if (name && m.name.indexOf(name) === -1) return false;
+        if (org && m.org !== org) return false;
+        if (status && m.political !== status) return false;
+        if (type && m.type !== type) return false;
+        return true;
+      });
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleReset() {
+      document.getElementById('searchName').value = '';
+      document.getElementById('searchOrg').value = '';
+      document.getElementById('searchStatus').value = '';
+      document.getElementById('searchType').value = '';
+      filtered = members.slice();
+      currentPage = 1;
+      renderTable();
+    }
+
+    function findMember(id) {
+      return members.find(function (m) { return m.id === id; });
+    }
+
+    function viewMember(id) {
+      var m = findMember(id);
+      if (!m) return;
+      document.getElementById('viewMemberBody').innerHTML =
+        '<div class="detail-section"><h4>基本信息</h4><div class="detail-grid">' +
+        item('姓名', m.name) + item('性别', m.gender) + item('民族', m.nation) +
+        item('出生日期', m.birthday) + item('身份证号', m.idCard) + item('学历', m.education) +
+        '</div></div>' +
+        '<div class="detail-section"><h4>组织关系</h4><div class="detail-grid">' +
+        item('所属党组织', m.org) + item('党内职务', m.position) + item('政治面貌', m.political) +
+        item('入党时间', m.joinDate) + item('转正时间', m.formalDate || '—') + item('党员类别', m.type) +
+        item('状态', m.state) + item('入党介绍人', m.introducer || '—') + item('党费缴纳至', m.duesPaid || '—') +
+        '</div></div>' +
+        '<div class="detail-section"><h4>工作与联系</h4><div class="detail-grid">' +
+        item('工作单位', m.company) + item('职务/岗位', m.job || '—') + item('联系电话', m.phone) +
+        item('电子邮箱', m.email || '—') + item('家庭住址', m.address || '—') + item('备注', m.remark || '—') +
+        '</div></div>' +
+        '<div style="display:flex;justify-content:flex-end;gap:10px;">' +
+        '<button type="button" class="btn btn-default" onclick="closeModal(\'viewMemberModal\')">关闭</button>' +
+        '<button type="button" class="btn btn-primary" onclick="closeModal(\'viewMemberModal\');openEditModal(' + m.id + ')">编辑</button>' +
+        '</div>';
+      openModal('viewMemberModal');
+    }
+
+    function item(label, val) {
+      return '<div class="detail-item"><span class="label">' + label + '：</span><span class="val">' + val + '</span></div>';
+    }
+
+    function clearForm() {
+      document.getElementById('editId').value = '';
+      document.getElementById('memberForm').reset();
+      document.getElementById('fNation').value = '汉族';
+      document.getElementById('fPosition').value = '普通党员';
+      document.getElementById('fState').value = '正常';
+    }
+
+    function fillForm(m) {
+      document.getElementById('editId').value = m.id;
+      document.getElementById('fName').value = m.name;
+      document.getElementById('fGender').value = m.gender;
+      document.getElementById('fNation').value = m.nation;
+      document.getElementById('fIdCard').value = m.idCard;
+      document.getElementById('fBirthday').value = m.birthday;
+      document.getElementById('fEducation').value = m.education;
+      document.getElementById('fOrg').value = m.org;
+      document.getElementById('fPosition').value = m.position;
+      document.getElementById('fPolitical').value = m.political;
+      document.getElementById('fJoinDate').value = m.joinDate;
+      document.getElementById('fFormalDate').value = m.formalDate || '';
+      document.getElementById('fType').value = m.type;
+      document.getElementById('fState').value = m.state;
+      document.getElementById('fIntroducer').value = m.introducer || '';
+      document.getElementById('fDuesPaid').value = m.duesPaid || '';
+      document.getElementById('fCompany').value = m.company;
+      document.getElementById('fJob').value = m.job || '';
+      document.getElementById('fPhone').value = m.phone;
+      document.getElementById('fEmail').value = m.email || '';
+      document.getElementById('fAddress').value = m.address || '';
+      document.getElementById('fRemark').value = m.remark || '';
+    }
+
+    function openAddModal() {
+      clearForm();
+      document.getElementById('formModalTitle').textContent = '新增党员';
+      openModal('memberFormModal');
+    }
+
+    function openEditModal(id) {
+      var m = findMember(id);
+      if (!m) return;
+      fillForm(m);
+      document.getElementById('formModalTitle').textContent = '编辑党员信息';
+      openModal('memberFormModal');
+    }
+
+    function saveMember(e) {
+      e.preventDefault();
+      var id = document.getElementById('editId').value;
+      var data = {
+        name: document.getElementById('fName').value.trim(),
+        gender: document.getElementById('fGender').value,
+        nation: document.getElementById('fNation').value,
+        idCard: document.getElementById('fIdCard').value.trim(),
+        birthday: document.getElementById('fBirthday').value,
+        education: document.getElementById('fEducation').value,
+        org: document.getElementById('fOrg').value,
+        position: document.getElementById('fPosition').value,
+        political: document.getElementById('fPolitical').value,
+        joinDate: document.getElementById('fJoinDate').value,
+        formalDate: document.getElementById('fFormalDate').value,
+        type: document.getElementById('fType').value,
+        state: document.getElementById('fState').value,
+        introducer: document.getElementById('fIntroducer').value.trim(),
+        duesPaid: document.getElementById('fDuesPaid').value,
+        company: document.getElementById('fCompany').value.trim(),
+        job: document.getElementById('fJob').value.trim(),
+        phone: document.getElementById('fPhone').value.trim(),
+        email: document.getElementById('fEmail').value.trim(),
+        address: document.getElementById('fAddress').value.trim(),
+        remark: document.getElementById('fRemark').value.trim()
+      };
+
+      if (id) {
+        var idx = members.findIndex(function (m) { return m.id === Number(id); });
+        if (idx > -1) members[idx] = Object.assign({}, members[idx], data);
+        showMessage('保存成功', 'success');
+      } else {
+        data.id = members.length ? Math.max.apply(null, members.map(function (m) { return m.id; })) + 1 : 1;
+        members.unshift(data);
+        showMessage('新增成功', 'success');
+      }
+
+      closeModal('memberFormModal');
+      handleSearch();
+    }
+
+    function deleteMember(id) {
+      confirmDelete('确定要删除该党员信息吗？', function () {
+        members = members.filter(function (m) { return m.id !== id; });
+        handleSearch();
+        showMessage('删除成功', 'success');
+      });
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
