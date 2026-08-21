@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧党建综合智能管理平台 - 组织建设</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .org-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .org-stat {
+      background: #fff;
+      border-radius: 8px;
+      padding: 18px 22px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .org-stat .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .org-stat .icon.red { background: linear-gradient(135deg, #d32f2f, #e57373); }
+    .org-stat .icon.blue { background: linear-gradient(135deg, #1976d2, #64b5f6); }
+    .org-stat .icon.orange { background: linear-gradient(135deg, #f57c00, #ffb74d); }
+    .org-stat .icon.green { background: linear-gradient(135deg, #388e3c, #81c784); }
+    .org-stat .num { font-size: 28px; font-weight: 700; color: #222; line-height: 1.2; }
+    .org-stat .label { font-size: 14px; color: #888; margin-top: 2px; }
+    .table-wrap {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .table-wrap::-webkit-scrollbar { display: none; height: 0; }
+    .table th, .table td { white-space: nowrap; vertical-align: middle; }
+    .org-name-cell { font-weight: 600; color: #222; }
+    .org-name-cell .code {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: #999;
+      margin-top: 2px;
+    }
+    .indent-1 { padding-left: 8px !important; }
+    .indent-2 { padding-left: 28px !important; }
+    .indent-3 { padding-left: 48px !important; }
+    .tree-icon { color: #d32f2f; margin-right: 6px; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px 28px;
+    }
+    .detail-item { font-size: 15px; line-height: 1.7; color: #555; }
+    .detail-item .label { color: #999; margin-right: 6px; min-width: 100px; display: inline-block; }
+    .detail-item .val { color: #222; font-weight: 500; }
+    .detail-section { margin-bottom: 22px; }
+    .detail-section h4 {
+      font-size: 16px;
+      color: #d32f2f;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .modal-content.wide { max-width: 920px; }
+    .page-info { text-align: center; color: #888; font-size: 14px; margin-top: 8px; }
+    .committee-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .committee-tags span {
+      background: #fff5f5;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    @media (max-width: 992px) {
+      .org-stats { grid-template-columns: repeat(2, 1fr); }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <div class="logo">
+      <i class="fa fa-flag"></i>
+      智慧党建综合智能管理平台
+    </div>
+    <div class="nav-tabs">
+      <a href="index.html"><i class="fa fa-home"></i> 首页</a>
+      <a href="党员管理.html"><i class="fa fa-users"></i> 党员管理</a>
+      <a href="组织建设.html" class="active"><i class="fa fa-sitemap"></i> 组织建设</a>
+      <a href="学习培训.html"><i class="fa fa-book"></i> 学习培训</a>
+      <a href="活动管理.html"><i class="fa fa-calendar"></i> 活动管理</a>
+      <a href="统计分析.html"><i class="fa fa-bar-chart"></i> 统计分析</a>
+      <a href="系统设置.html"><i class="fa fa-cog"></i> 系统设置</a>
+    </div>
+    <div class="user-info">
+      <img src="https://picsum.photos/id/64/35/35" alt="用户头像">
+      <span>管理员</span>
+      <i class="fa fa-sign-out" style="cursor: pointer;" onclick="alert('退出登录')"></i>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="content">
+      <div class="content-header">
+        <h2><i class="fa fa-sitemap"></i> 组织架构管理</h2>
+        <div class="operate-btn">
+          <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fa fa-plus"></i> 新增组织
+          </button>
+          <button class="btn btn-success" onclick="exportData('组织架构')">
+            <i class="fa fa-download"></i> 导出数据
+          </button>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <form class="search-form" onsubmit="return false;">
+          <div class="form-group">
+            <label>组织名称</label>
+            <input type="text" class="form-control" id="searchName" placeholder="请输入组织名称">
+          </div>
+          <div class="form-group">
+            <label>组织类型</label>
+            <select class="form-control" id="searchType">
+              <option value="">全部</option>
+              <option>党委</option>
+              <option>党总支</option>
+              <option>党支部</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>状态</label>
+            <select class="form-control" id="searchState">
+              <option value="">全部</option>
+              <option>正常</option>
+              <option>换届中</option>
+              <option>筹建中</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>书记</label>
+            <input type="text" class="form-control" id="searchSecretary" placeholder="请输入书记姓名">
+          </div>
+          <div class="form-group" style="flex: 0 0 auto; min-width: auto;">
+            <label>&nbsp;</label>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-primary" onclick="handleSearch()">
+                <i class="fa fa-search"></i> 查询
+              </button>
+              <button type="button" class="btn btn-default" onclick="handleReset()">
+                <i class="fa fa-refresh"></i> 重置
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="data-table">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>序号</th>
+                <th>组织名称</th>
+                <th>组织类型</th>
+                <th>上级组织</th>
+                <th>书记</th>
+                <th>副书记</th>
+                <th>党员人数</th>
+                <th>成立时间</th>
+                <th>换届时间</th>
+                <th>任期至</th>
+                <th>联系电话</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="orgTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <ul class="pagination" id="pagination"></ul>
+      <div class="page-info" id="pageInfo"></div>
+    </div>
+  </div>
+
+  <!-- 新增/编辑 -->
+  <div id="orgFormModal" class="modal">
+    <div class="modal-content wide">
+      <div class="modal-header">
+        <h3 id="formModalTitle">新增组织</h3>
+        <button class="close" onclick="closeModal('orgFormModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="orgForm" onsubmit="saveOrg(event)">
+          <input type="hidden" id="editId">
+          <div class="detail-section">
+            <h4>基本信息</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>组织名称 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fName" required>
+              </div>
+              <div class="form-group">
+                <label>组织编码 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fCode" placeholder="如 DJ-2020-001" required>
+              </div>
+              <div class="form-group">
+                <label>组织类型 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fType" required>
+                  <option value="">请选择</option>
+                  <option>党委</option>
+                  <option>党总支</option>
+                  <option>党支部</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>上级组织</label>
+                <select class="form-control" id="fParent"></select>
+              </div>
+              <div class="form-group">
+                <label>成立时间 <span style="color: red;">*</span></label>
+                <input type="date" class="form-control" id="fFoundDate" required>
+              </div>
+              <div class="form-group">
+                <label>状态 <span style="color: red;">*</span></label>
+                <select class="form-control" id="fState" required>
+                  <option>正常</option>
+                  <option>换届中</option>
+                  <option>筹建中</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>覆盖单位</label>
+                <input type="text" class="form-control" id="fUnit" placeholder="党组织所属/覆盖的行政单位">
+              </div>
+              <div class="form-group">
+                <label>办公地址</label>
+                <input type="text" class="form-control" id="fAddress">
+              </div>
+              <div class="form-group">
+                <label>联系电话 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fPhone" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>班子成员</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>书记 <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="fSecretary" required>
+              </div>
+              <div class="form-group">
+                <label>副书记</label>
+                <input type="text" class="form-control" id="fDeputy">
+              </div>
+              <div class="form-group">
+                <label>组织委员</label>
+                <input type="text" class="form-control" id="fOrgMember">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>宣传委员</label>
+                <input type="text" class="form-control" id="fPropaganda">
+              </div>
+              <div class="form-group">
+                <label>纪检委员</label>
+                <input type="text" class="form-control" id="fDiscipline">
+              </div>
+              <div class="form-group">
+                <label>联系人</label>
+                <input type="text" class="form-control" id="fContact">
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>换届与党员情况</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>本届换届时间</label>
+                <input type="date" class="form-control" id="fElectionDate">
+              </div>
+              <div class="form-group">
+                <label>任期至</label>
+                <input type="date" class="form-control" id="fTermEnd">
+              </div>
+              <div class="form-group">
+                <label>党员人数 <span style="color: red;">*</span></label>
+                <input type="number" class="form-control" id="fMemberCount" min="0" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>正式党员</label>
+                <input type="number" class="form-control" id="fFormalCount" min="0">
+              </div>
+              <div class="form-group">
+                <label>预备党员</label>
+                <input type="number" class="form-control" id="fPrepCount" min="0">
+              </div>
+              <div class="form-group">
+                <label>党小组数</label>
+                <input type="number" class="form-control" id="fGroupCount" min="0">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>组织简介</label>
+              <textarea class="form-control" id="fIntro" rows="3" placeholder="简要介绍组织职责、覆盖范围等"></textarea>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-default" onclick="closeModal('orgFormModal')">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查看 -->
+  <div id="viewOrgModal" class="modal">
+    <div class="modal-content wide">
+      <div class="modal-header">
+        <h3>查看组织信息</h3>
+        <button class="close" onclick="closeModal('viewOrgModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="viewOrgBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    var orgs = [
+      {
+        id: 1, name: '中共晋城市直属机关工作委员会', code: 'DJ-JC-2010-001', type: '党委', parentId: null,
+        secretary: '刘振华', deputy: '陈志远、周雅琴', orgMember: '王美玲', propaganda: '孙涛', discipline: '马超',
+        contact: '赵晓雯', phone: '0356-2051200', address: '山西省晋城市城区凤台街188号市行政中心5层',
+        unit: '中共晋城市直属机关工委', foundDate: '2010-03-15', electionDate: '2023-06-20', termEnd: '2028-06-19',
+        memberCount: 186, formalCount: 172, prepCount: 14, groupCount: 0, state: '正常',
+        intro: '负责晋城市直属机关党的建设工作，指导所属党总支、党支部开展组织生活、党员教育管理和党建责任制落实。'
+      },
+      {
+        id: 2, name: '机关党总支部委员会', code: 'DJ-JC-2015-008', type: '党总支', parentId: 1,
+        secretary: '陈志远', deputy: '周雅琴', orgMember: '王美玲', propaganda: '孙涛', discipline: '马超',
+        contact: '黄芳', phone: '0356-2051220', address: '山西省晋城市城区凤台街188号市行政中心3层',
+        unit: '晋城市政务服务中心、市委组织部相关科室', foundDate: '2015-09-08', electionDate: '2023-07-12', termEnd: '2028-07-11',
+        memberCount: 68, formalCount: 63, prepCount: 5, groupCount: 0, state: '正常',
+        intro: '统筹机关第一、第二党支部及青年先锋党支部日常党建工作，落实晋城市委及机关工委部署。'
+      },
+      {
+        id: 3, name: '机关第一党支部', code: 'DJ-JC-2016-021', type: '党支部', parentId: 2,
+        secretary: '陈志远', deputy: '孙涛', orgMember: '何静', propaganda: '孙涛', discipline: '陈志远',
+        contact: '何静', phone: '0356-2051231', address: '山西省晋城市城区凤台街168号政务服务大厅党建活动室',
+        unit: '晋城市政务服务中心', foundDate: '2016-04-18', electionDate: '2023-08-05', termEnd: '2028-08-04',
+        memberCount: 28, formalCount: 26, prepCount: 2, groupCount: 3, state: '正常',
+        intro: '覆盖晋城市政务服务中心综合科、宣传科及窗口服务岗位党员，常态化开展主题党日和窗口先锋岗创建。'
+      },
+      {
+        id: 4, name: '机关第二党支部', code: 'DJ-JC-2016-022', type: '党支部', parentId: 2,
+        secretary: '周雅琴', deputy: '马超', orgMember: '王美玲', propaganda: '周雅琴', discipline: '马超',
+        contact: '王美玲', phone: '0356-2051232', address: '山西省晋城市城区泽州路66号组织部办公楼2层',
+        unit: '中共晋城市委组织部、市人社局相关科室', foundDate: '2016-04-18', electionDate: '2023-08-10', termEnd: '2028-08-09',
+        memberCount: 24, formalCount: 23, prepCount: 1, groupCount: 2, state: '正常',
+        intro: '负责干部人事、组织建设相关岗位党员教育管理，近年来连续获评晋城市先进基层党组织。'
+      },
+      {
+        id: 5, name: '青年先锋党支部', code: 'DJ-JC-2021-045', type: '党支部', parentId: 2,
+        secretary: '黄芳', deputy: '赵晓雯', orgMember: '赵晓雯', propaganda: '黄芳', discipline: '何静',
+        contact: '赵晓雯', phone: '0356-2051245', address: '山西省晋城市城区黄华街52号融媒体中心党建活动室',
+        unit: '晋城市大数据中心、市融媒体中心青年党员', foundDate: '2021-05-04', electionDate: '2024-05-20', termEnd: '2029-05-19',
+        memberCount: 16, formalCount: 14, prepCount: 2, groupCount: 2, state: '正常',
+        intro: '以35岁以下青年党员为主体，聚焦数字化党建、新媒体宣传和志愿服务，打造晋城青年党建品牌。'
+      },
+      {
+        id: 6, name: '生产经营党总支部委员会', code: 'DJ-JC-2014-012', type: '党总支', parentId: 1,
+        secretary: '林志鹏', deputy: '李建国', orgMember: '郑丽', propaganda: '李建国', discipline: '林志鹏',
+        contact: '郑丽', phone: '0356-2186600', address: '山西省晋城市城区兰花路128号城建集团总部',
+        unit: '晋城市城建集团有限公司', foundDate: '2014-11-20', electionDate: '2022-12-08', termEnd: '2027-12-07',
+        memberCount: 72, formalCount: 68, prepCount: 4, groupCount: 0, state: '换届中',
+        intro: '负责城建集团总部及县区项目一线党组织建设，推进党建与生产经营深度融合。'
+      },
+      {
+        id: 7, name: '生产党支部', code: 'DJ-JC-2017-033', type: '党支部', parentId: 6,
+        secretary: '李建国', deputy: '郑丽', orgMember: '郑丽', propaganda: '李建国', discipline: '林志鹏',
+        contact: '郑丽', phone: '0356-2186618', address: '山西省晋城市泽州县巴公镇建设路18号项目部会议室',
+        unit: '晋城市城建集团有限公司生产运营板块', foundDate: '2017-03-22', electionDate: '2023-03-15', termEnd: '2028-03-14',
+        memberCount: 35, formalCount: 33, prepCount: 2, groupCount: 4, state: '正常',
+        intro: '覆盖项目经理、安全员及一线技术骨干党员，坚持“支部建在项目上”，保障安全生产与攻坚任务。'
+      },
+      {
+        id: 8, name: '陵川项目临时党支部', code: 'DJ-JC-2024-061', type: '党支部', parentId: 6,
+        secretary: '林志鹏', deputy: '', orgMember: '林志鹏', propaganda: '林志鹏', discipline: '林志鹏',
+        contact: '林志鹏', phone: '18735605678', address: '山西省晋城市陵川县崇文镇先锋街6号项目现场党建活动室',
+        unit: '晋城市城建集团陵川县重点工程项目组', foundDate: '2024-02-28', electionDate: '2024-02-28', termEnd: '2026-02-27',
+        memberCount: 9, formalCount: 9, prepCount: 0, groupCount: 1, state: '正常',
+        intro: '为服务陵川县重点工程临时成立，负责流动党员组织生活和思想教育，定期向生产经营党总支汇报。'
+      },
+      {
+        id: 9, name: '离退休党支部', code: 'DJ-JC-2012-006', type: '党支部', parentId: 1,
+        secretary: '吴强', deputy: '', orgMember: '吴强', propaganda: '吴强', discipline: '吴强',
+        contact: '吴强', phone: '0356-2051888', address: '山西省晋城市城区红星街15号老干部活动中心',
+        unit: '晋城市财政局等机关离退休干部', foundDate: '2012-07-01', electionDate: '2023-09-01', termEnd: '2028-08-31',
+        memberCount: 42, formalCount: 42, prepCount: 0, groupCount: 5, state: '正常',
+        intro: '服务机关离退休党员，开展健康讲座、红色宣讲和志愿服务，发挥老党员政治优势和经验优势。'
+      },
+      {
+        id: 10, name: '党校教职工党支部', code: 'DJ-JC-2018-028', type: '党支部', parentId: 1,
+        secretary: '马超', deputy: '周雅琴', orgMember: '马超', propaganda: '周雅琴', discipline: '马超',
+        contact: '马超', phone: '0356-2089001', address: '山西省晋城市城区文昌街9号市委党校科研楼',
+        unit: '中共晋城市委党校', foundDate: '2018-09-10', electionDate: '2024-01-16', termEnd: '2029-01-15',
+        memberCount: 18, formalCount: 17, prepCount: 1, groupCount: 2, state: '正常',
+        intro: '负责党校教职工党员管理及教学科研中的党建工作，承担全市党员干部教育培训保障任务。'
+      }
+    ];
+
+    var filtered = orgs.slice();
+    var currentPage = 1;
+    var pageSize = 10;
+
+    function getParentName(parentId) {
+      if (!parentId) return '—';
+      var p = orgs.find(function (o) { return o.id === parentId; });
+      return p ? p.name : '—';
+    }
+
+    function typeBadge(t) {
+      if (t === '党委') return '<span class="badge badge-danger">党委</span>';
+      if (t === '党总支') return '<span class="badge badge-warning">党总支</span>';
+      return '<span class="badge badge-info">党支部</span>';
+    }
+
+    function stateBadge(s) {
+      if (s === '正常') return '<span class="badge badge-success">正常</span>';
+      if (s === '换届中') return '<span class="badge badge-warning">换届中</span>';
+      return '<span class="badge badge-info">筹建中</span>';
+    }
+
+    function levelOf(org) {
+      if (!org.parentId) return 1;
+      var p = orgs.find(function (o) { return o.id === org.parentId; });
+      if (!p || !p.parentId) return 2;
+      return 3;
+    }
+
+    function treeIcon(type) {
+      if (type === '党委') return 'fa-institution';
+      if (type === '党总支') return 'fa-building';
+      return 'fa-flag';
+    }
+
+    function updateStats() {
+      document.getElementById('statOrg').textContent = orgs.length;
+      // 仅统计党支部党员，避免总支/党委重复累计；若无则用全部党支部
+      var branches = orgs.filter(function (o) { return o.type === '党支部'; });
+      var memberSum = branches.reduce(function (s, o) { return s + (o.memberCount || 0); }, 0);
+      document.getElementById('statMember').textContent = memberSum;
+      document.getElementById('statBranch').textContent = branches.length;
+      document.getElementById('statNormal').textContent = orgs.filter(function (o) { return o.state === '正常'; }).length;
+    }
+
+    function sortByTree(list) {
+      var map = {};
+      list.forEach(function (o) { map[o.id] = o; });
+      var roots = list.filter(function (o) { return !o.parentId || !map[o.parentId]; });
+      var result = [];
+      function walk(node) {
+        result.push(node);
+        list.filter(function (o) { return o.parentId === node.id; })
+          .sort(function (a, b) { return a.id - b.id; })
+          .forEach(walk);
+      }
+      roots.sort(function (a, b) { return a.id - b.id; }).forEach(walk);
+      // 补上因筛选导致的孤立节点
+      list.forEach(function (o) {
+        if (result.indexOf(o) === -1) result.push(o);
+      });
+      return result;
+    }
+
+    function renderTable() {
+      var sorted = sortByTree(filtered);
+      var start = (currentPage - 1) * pageSize;
+      var pageData = sorted.slice(start, start + pageSize);
+      var tbody = document.getElementById('orgTableBody');
+
+      if (!pageData.length) {
+        tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:#999;padding:40px;">暂无符合条件的数据</td></tr>';
+      } else {
+        tbody.innerHTML = pageData.map(function (o, i) {
+          var lv = levelOf(o);
+          return '<tr>' +
+            '<td>' + (start + i + 1) + '</td>' +
+            '<td class="org-name-cell indent-' + lv + '">' +
+              '<i class="fa ' + treeIcon(o.type) + ' tree-icon"></i>' + o.name +
+              '<span class="code">' + o.code + '</span>' +
+            '</td>' +
+            '<td>' + typeBadge(o.type) + '</td>' +
+            '<td>' + getParentName(o.parentId) + '</td>' +
+            '<td>' + o.secretary + '</td>' +
+            '<td>' + (o.deputy || '—') + '</td>' +
+            '<td><strong style="color:#d32f2f;">' + o.memberCount + '</strong></td>' +
+            '<td>' + o.foundDate + '</td>' +
+            '<td>' + (o.electionDate || '—') + '</td>' +
+            '<td>' + (o.termEnd || '—') + '</td>' +
+            '<td>' + o.phone + '</td>' +
+            '<td>' + stateBadge(o.state) + '</td>' +
+            '<td><div class="action-btns">' +
+            '<button class="btn btn-sm btn-info" onclick="viewOrg(' + o.id + ')">查看</button>' +
+            '<button class="btn btn-sm btn-primary" onclick="openEditModal(' + o.id + ')">编辑</button>' +
+            '<button class="btn btn-sm btn-danger" onclick="deleteOrg(' + o.id + ')">删除</button>' +
+            '</div></td></tr>';
+        }).join('');
+      }
+      renderPagination(sorted.length);
+      updateStats();
+    }
+
+    function renderPagination(total) {
+      var pages = Math.max(1, Math.ceil(total / pageSize));
+      if (currentPage > pages) currentPage = pages;
+      var html = '<li class="page-item"><a class="page-link" href="#" onclick="goPage(' + (currentPage - 1) + ');return false;">上一页</a></li>';
+      for (var p = 1; p <= pages; p++) {
+        html += '<li class="page-item' + (p === currentPage ? ' active' : '') + '"><a class="page-link" href="#" onclick="goPage(' + p + ');return false;">' + p + '</a></li>';
+      }
+      html += '<li class="page-item"><a class="page-link" href="#" onclick="goPage(' + (currentPage + 1) + ');return false;">下一页</a></li>';
+      document.getElementById('pagination').innerHTML = html;
+      document.getElementById('pageInfo').textContent = '共 ' + total + ' 条记录，第 ' + currentPage + ' / ' + pages + ' 页';
+    }
+
+    function goPage(p) {
+      var pages = Math.max(1, Math.ceil(sortByTree(filtered).length / pageSize));
+      if (p < 1 || p > pages) return;
+      currentPage = p;
+      renderTable();
+    }
+
+    function handleSearch() {
+      var name = document.getElementById('searchName').value.trim();
+      var type = document.getElementById('searchType').value;
+      var state = document.getElementById('searchState').value;
+      var secretary = document.getElementById('searchSecretary').value.trim();
+      filtered = orgs.filter(function (o) {
+        if (name && o.name.indexOf(name) === -1) return false;
+        if (type && o.type !== type) return false;
+        if (state && o.state !== state) return false;
+        if (secretary && o.secretary.indexOf(secretary) === -1) return false;
+        return true;
+      });
+      currentPage = 1;
+      renderTable();
+    }
+
+    function handleReset() {
+      document.getElementById('searchName').value = '';
+      document.getElementById('searchType').value = '';
+      document.getElementById('searchState').value = '';
+      document.getElementById('searchSecretary').value = '';
+      filtered = orgs.slice();
+      currentPage = 1;
+      renderTable();
+    }
+
+    function findOrg(id) {
+      return orgs.find(function (o) { return o.id === id; });
+    }
+
+    function item(label, val) {
+      return '<div class="detail-item"><span class="label">' + label + '：</span><span class="val">' + (val || '—') + '</span></div>';
+    }
+
+    function viewOrg(id) {
+      var o = findOrg(id);
+      if (!o) return;
+      var committee = '';
+      [
+        ['书记', o.secretary],
+        ['副书记', o.deputy],
+        ['组织委员', o.orgMember],
+        ['宣传委员', o.propaganda],
+        ['纪检委员', o.discipline]
+      ].forEach(function (pair) {
+        if (pair[1]) committee += '<span>' + pair[0] + '：' + pair[1] + '</span>';
+      });
+
+      document.getElementById('viewOrgBody').innerHTML =
+        '<div class="detail-section"><h4>基本信息</h4><div class="detail-grid">' +
+        item('组织名称', o.name) + item('组织编码', o.code) + item('组织类型', o.type) +
+        item('上级组织', getParentName(o.parentId)) + item('覆盖单位', o.unit) + item('状态', o.state) +
+        item('成立时间', o.foundDate) + item('联系电话', o.phone) + item('办公地址', o.address) +
+        '</div></div>' +
+        '<div class="detail-section"><h4>班子成员</h4><div class="committee-tags">' + committee + '</div>' +
+        '<div class="detail-grid" style="margin-top:14px;">' + item('联系人', o.contact) + '</div></div>' +
+        '<div class="detail-section"><h4>换届与党员情况</h4><div class="detail-grid">' +
+        item('本届换届时间', o.electionDate) + item('任期至', o.termEnd) +
+        item('党员人数', o.memberCount) + item('正式党员', o.formalCount) +
+        item('预备党员', o.prepCount) + item('党小组数', o.groupCount) +
+        '</div></div>' +
+        '<div class="detail-section"><h4>组织简介</h4><p style="color:#555;line-height:1.8;font-size:15px;margin:0;">' +
+        (o.intro || '暂无简介') + '</p></div>' +
+        '<div style="display:flex;justify-content:flex-end;gap:10px;">' +
+        '<button type="button" class="btn btn-default" onclick="closeModal(\'viewOrgModal\')">关闭</button>' +
+        '<button type="button" class="btn btn-primary" onclick="closeModal(\'viewOrgModal\');openEditModal(' + o.id + ')">编辑</button>' +
+        '</div>';
+      openModal('viewOrgModal');
+    }
+
+    function fillParentOptions(excludeId) {
+      var sel = document.getElementById('fParent');
+      var html = '<option value="">无（顶级组织）</option>';
+      orgs.forEach(function (o) {
+        if (excludeId && o.id === excludeId) return;
+        if (o.type === '党支部') return; // 党支部一般不再作为上级
+        html += '<option value="' + o.id + '">' + o.name + '（' + o.type + '）</option>';
+      });
+      sel.innerHTML = html;
+    }
+
+    function clearForm() {
+      document.getElementById('editId').value = '';
+      document.getElementById('orgForm').reset();
+      document.getElementById('fState').value = '正常';
+      fillParentOptions(null);
+    }
+
+    function fillForm(o) {
+      fillParentOptions(o.id);
+      document.getElementById('editId').value = o.id;
+      document.getElementById('fName').value = o.name;
+      document.getElementById('fCode').value = o.code;
+      document.getElementById('fType').value = o.type;
+      document.getElementById('fParent').value = o.parentId || '';
+      document.getElementById('fFoundDate').value = o.foundDate;
+      document.getElementById('fState').value = o.state;
+      document.getElementById('fUnit').value = o.unit || '';
+      document.getElementById('fAddress').value = o.address || '';
+      document.getElementById('fPhone').value = o.phone;
+      document.getElementById('fSecretary').value = o.secretary;
+      document.getElementById('fDeputy').value = o.deputy || '';
+      document.getElementById('fOrgMember').value = o.orgMember || '';
+      document.getElementById('fPropaganda').value = o.propaganda || '';
+      document.getElementById('fDiscipline').value = o.discipline || '';
+      document.getElementById('fContact').value = o.contact || '';
+      document.getElementById('fElectionDate').value = o.electionDate || '';
+      document.getElementById('fTermEnd').value = o.termEnd || '';
+      document.getElementById('fMemberCount').value = o.memberCount;
+      document.getElementById('fFormalCount').value = o.formalCount || 0;
+      document.getElementById('fPrepCount').value = o.prepCount || 0;
+      document.getElementById('fGroupCount').value = o.groupCount || 0;
+      document.getElementById('fIntro').value = o.intro || '';
+    }
+
+    function openAddModal() {
+      clearForm();
+      document.getElementById('formModalTitle').textContent = '新增组织';
+      openModal('orgFormModal');
+    }
+
+    function openEditModal(id) {
+      var o = findOrg(id);
+      if (!o) return;
+      fillForm(o);
+      document.getElementById('formModalTitle').textContent = '编辑组织信息';
+      openModal('orgFormModal');
+    }
+
+    function saveOrg(e) {
+      e.preventDefault();
+      var id = document.getElementById('editId').value;
+      var parentVal = document.getElementById('fParent').value;
+      var data = {
+        name: document.getElementById('fName').value.trim(),
+        code: document.getElementById('fCode').value.trim(),
+        type: document.getElementById('fType').value,
+        parentId: parentVal ? Number(parentVal) : null,
+        foundDate: document.getElementById('fFoundDate').value,
+        state: document.getElementById('fState').value,
+        unit: document.getElementById('fUnit').value.trim(),
+        address: document.getElementById('fAddress').value.trim(),
+        phone: document.getElementById('fPhone').value.trim(),
+        secretary: document.getElementById('fSecretary').value.trim(),
+        deputy: document.getElementById('fDeputy').value.trim(),
+        orgMember: document.getElementById('fOrgMember').value.trim(),
+        propaganda: document.getElementById('fPropaganda').value.trim(),
+        discipline: document.getElementById('fDiscipline').value.trim(),
+        contact: document.getElementById('fContact').value.trim(),
+        electionDate: document.getElementById('fElectionDate').value,
+        termEnd: document.getElementById('fTermEnd').value,
+        memberCount: Number(document.getElementById('fMemberCount').value) || 0,
+        formalCount: Number(document.getElementById('fFormalCount').value) || 0,
+        prepCount: Number(document.getElementById('fPrepCount').value) || 0,
+        groupCount: Number(document.getElementById('fGroupCount').value) || 0,
+        intro: document.getElementById('fIntro').value.trim()
+      };
+
+      if (id) {
+        var idx = orgs.findIndex(function (o) { return o.id === Number(id); });
+        if (idx > -1) orgs[idx] = Object.assign({}, orgs[idx], data);
+        showMessage('保存成功', 'success');
+      } else {
+        data.id = orgs.length ? Math.max.apply(null, orgs.map(function (o) { return o.id; })) + 1 : 1;
+        orgs.push(data);
+        showMessage('新增成功', 'success');
+      }
+      closeModal('orgFormModal');
+      handleSearch();
+    }
+
+    function deleteOrg(id) {
+      var children = orgs.filter(function (o) { return o.parentId === id; });
+      if (children.length) {
+        showMessage('该组织下存在下级组织，请先删除下级组织', 'warning');
+        return;
+      }
+      confirmDelete('确定要删除该组织吗？', function () {
+        orgs = orgs.filter(function (o) { return o.id !== id; });
+        handleSearch();
+        showMessage('删除成功', 'success');
+      });
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
