@@ -1,0 +1,1 @@
+import{r as s}from"./index-DtXKb80o.js";const t=async a=>await s.get({url:"/exam/test-result/page-by-user-id",params:a}),e=async a=>await s.get({url:"/exam/test-result/detail",params:a});export{e as a,t as g};
