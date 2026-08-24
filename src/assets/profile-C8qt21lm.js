@@ -1,0 +1,1 @@
+import{r}from"./index-DtXKb80o.js";const a=()=>r.get({url:"/system/user/profile/get"}),t=s=>r.put({url:"/system/user/profile/update",data:s}),o=(s,e)=>r.put({url:"/system/user/profile/update-password",data:{oldPassword:s,newPassword:e}});export{o as a,a as g,t as u};
