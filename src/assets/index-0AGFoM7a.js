@@ -1,0 +1,1 @@
+import{r as t}from"./index-DtXKb80o.js";const e=async a=>await t.get({url:"/exam/test-result/all-page",params:a}),s=async a=>await t.get({url:"/exam/test-result/detail",params:a}),r=async a=>await t.download({url:"/exam/test-result/export-excel",params:a}),l=async a=>await t.get({url:"/exam/test-result/get-cheating",params:a});export{r as a,s as b,l as c,e as g};
