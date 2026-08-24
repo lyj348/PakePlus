@@ -1,0 +1,1 @@
+import{r as s}from"./index-DtXKb80o.js";const t=()=>s.get({url:"/system/menu/simple-list"}),a=e=>s.get({url:"/system/menu/list",params:e}),m=e=>s.get({url:"/system/menu/get?id="+e}),u=e=>s.post({url:"/system/menu/create",data:e}),r=e=>s.put({url:"/system/menu/update",data:e}),l=e=>s.delete({url:"/system/menu/delete?id="+e});export{m as a,a as b,u as c,l as d,t as g,r as u};
