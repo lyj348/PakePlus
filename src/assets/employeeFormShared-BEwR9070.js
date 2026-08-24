@@ -1,0 +1,1 @@
+function n(e){return typeof e=="number"?{userId:e}:e??{}}function o(e,t,a){return a?`${e==="create"?"\u65B0\u589E":"\u7F16\u8F91"}\u300C${a}\u300D${t}`:`${e==="create"?"\u65B0\u589E":"\u7F16\u8F91"}${t}`}const s={minRows:1,maxRows:6},r={minRows:2,maxRows:15};export{s as A,r as a,o as b,n as r};
