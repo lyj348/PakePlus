@@ -1,0 +1,1 @@
+import{r}from"./index-DtXKb80o.js";const t=a=>r.post({url:"/infra/data-source-config/create",data:a}),e=a=>r.put({url:"/infra/data-source-config/update",data:a}),o=a=>r.delete({url:"/infra/data-source-config/delete?id="+a}),c=a=>r.get({url:"/infra/data-source-config/get?id="+a}),i=()=>r.get({url:"/infra/data-source-config/list"});export{c as a,t as c,o as d,i as g,e as u};
